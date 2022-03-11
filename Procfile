@@ -1,1 +1,1 @@
-web: waitress-serve app:app
+web: waitress-serve --listen=443 app:app
