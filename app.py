@@ -1,6 +1,11 @@
+import os
+
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # create the application object
 
@@ -8,11 +13,10 @@ app = Flask(__name__)
 
 app.secret_key = "my precious"
 
-app.database = "sample.db"
+app.database = "posts.db"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config.from_object(os.getenv('APP_SETTINGS'))
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # create the sqlalchemy object
 db = SQLAlchemy(app)
