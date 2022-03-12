@@ -1,11 +1,13 @@
 click==8.0.4
 colorama==0.4.4
 Flask==2.0.3
+Flask-SQLAlchemy==2.5.1
+greenlet==1.1.2
 gunicorn==20.1.0
 itsdangerous==2.1.1
 Jinja2==3.0.3
 MarkupSafe==2.1.0
+python-dotenv==0.19.2
+SQLAlchemy==1.4.32
 waitress==2.1.0
 Werkzeug==2.0.3
-
-python-dotenv~=0.19.2
