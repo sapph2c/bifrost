@@ -17,4 +17,3 @@ class DevelopmentConfig(BaseConfig):
 # production config
 class ProductionConfig(BaseConfig):
     DEBUG = False
-
