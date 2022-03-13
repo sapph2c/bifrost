@@ -11,3 +11,5 @@ python-dotenv==0.19.2
 SQLAlchemy==1.4.32
 waitress==2.1.0
 Werkzeug==2.0.3
+requests~=2.27.1
+psutil~=5.9.0

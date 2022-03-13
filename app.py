@@ -61,9 +61,6 @@ def get_command():
     print(request.method)
     if request.method == 'POST':
         return 'ls'
-    #     agent_dict = request.json
-    #     add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
-    # return redirect(url_for('home'))
 
 
 @app.route('/welcome')
