@@ -1,28 +1,18 @@
-import os
-
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
-from dotenv import load_dotenv
-from sqlalchemy.sql import exists
-from sqlalchemy.sql import select
-from sqlalchemy.inspection import inspect
-
-load_dotenv()
+from config import BaseConfig
 
 # create the application object
-
 app = Flask(__name__)
-
+# set database name
 app.database = "agents.db"
-
-app.config.from_object(os.getenv('APP_SETTINGS'))
-
-
+# load the config
+app.config.from_object(BaseConfig)
 # create the sqlalchemy object
 db = SQLAlchemy(app)
 
-from models import *
+from models import Agent, CommandQueue
 
 # TODO
 """
@@ -93,7 +83,6 @@ def get_command():
 def command_out():
     print(request.method)
     if request.method == 'POST':
-        agent_id = request.json['id']
         output = request.json['output']
         print(output)
         return 'Received'
