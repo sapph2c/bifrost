@@ -5,10 +5,12 @@
 <br>
 <p>Click <a href="/logout">here</a> to logout.</p>
 <br><br>
-<h2>Posts:</h2>
-{% for post in posts %}
-    <strong>Title:</strong> {{ post.title }} <br>
-    <strong>Post:</strong> {{ post.description }} <br>
+<h2>Agents:</h2>
+{% for agent in agents %}
+    <strong>OS:</strong> {{ agent.os }} <br>
+    <strong>Host Name:</strong> {{ agent.host_name }} <br>
+    <strong>IP Address:</strong> {{ agent.ip }} <br>
+    <strong>RAM:</strong> {{ agent.ram }} <br>
 <br>
 {% endfor %}
 

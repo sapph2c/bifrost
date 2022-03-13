@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 # create the application object
@@ -13,13 +14,14 @@ app = Flask(__name__)
 
 app.secret_key = "my precious"
 
-app.database = "posts.db"
+app.database = "agents.db"
 
 app.config.from_object(os.getenv('APP_SETTINGS'))
 
 
 # create the sqlalchemy object
 db = SQLAlchemy(app)
+
 
 from models import *
 
@@ -35,11 +37,25 @@ def login_required(f):
     return wrap
 
 
+def add_agent(os, host_name, ip, ram):
+    db.session.add(Agent(os, host_name, ip, ram))
+    db.session.commit()
+
+
 @app.route('/')
 @login_required
 def home():  # put application's code here
-    posts = db.session.query(BlogPost).all()
-    return render_template('index.html', posts=posts)
+    agents = db.session.query(Agent).all()
+    return render_template('index.html', agents=agents)
+
+
+@app.route('/api/1.1/add_agent', methods=['GET', 'POST'])
+def agent_add():
+    print(request.method)
+    if request.method == 'POST':
+        agent_dict = request.json
+        add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
+    return redirect(url_for('home'))
 
 
 @app.route('/welcome')
