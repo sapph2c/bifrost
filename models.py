@@ -1,15 +1,19 @@
 from app import db
 
 
-class BlogPost(db.Model):
-    __tablename__ = "posts"
+class Agent(db.Model):
+    __tablename__ = "AGENTS"
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    description = db.Column(db.String, nullable=True)
+    os = db.Column(db.String, nullable=False)
+    host_name = db.Column(db.String, nullable=True)
+    ip = db.Column(db.String, nullable=True)
+    ram = db.Column(db.String, nullable=True)
 
-    def __init__(self, title, description):
-        self.title = title
-        self.description = description
+    def __init__(self, os, host_name, ip, ram):
+        self.os = os
+        self.host_name = host_name
+        self.ip = ip
+        self.ram = ram
 
     def __repr__(self):
         return f"title: {self.title}, description: {self.description}"
