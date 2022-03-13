@@ -16,4 +16,17 @@ class Agent(db.Model):
         self.ram = ram
 
     def __repr__(self):
-        return f"title: {self.title}, description: {self.description}"
+        return f"os: {self.os}, host_name: {self.host_name}, ip: {self.ip}, ram: {self.ram}, id: {self.id}"
+
+
+class CommandQueue(db.Model):
+    __tablename__ = "COMMAND QUEUE"
+    id = db.Column(db.String, primary_key=True)
+    command = db.Column(db.String, nullable=True)
+
+    def __init__(self, id, command=None):
+        self.id = id
+        self.command = command
+
+    def __repr__(self):
+        return f"id: {self.id}, command: {self.command}"

