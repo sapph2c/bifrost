@@ -24,6 +24,15 @@ db = SQLAlchemy(app)
 
 from models import *
 
+# TODO
+"""
+- Add shell window where you can send commands and receive output
+- Interact with bots
+- Make fronted look clean
+- Add api end point for command output
+
+"""
+
 
 def login_required(f):
     @wraps(f)
@@ -78,6 +87,16 @@ def get_command():
         print(agent_id)
         res = db.session.query(CommandQueue).one()
         return res.__dict__['command']
+
+
+@app.route('/api/1.1/command_out', methods=['GET', 'POST'])
+def command_out():
+    print(request.method)
+    if request.method == 'POST':
+        agent_id = request.json['id']
+        output = request.json['output']
+        print(output)
+        return 'Received'
 
 
 @app.route('/welcome')
