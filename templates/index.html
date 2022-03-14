@@ -13,5 +13,11 @@
     <strong>RAM:</strong> {{ agent.ram }} <br>
 <br>
 {% endfor %}
+<h3>Shell:</h3>
+<form action="" method="post">
+    <input type="text" placeholder="Command" name="command" value="{{ request.form.command }}">
+    <input class="btn btn-default" type="submit" value="submit">
+</form>
+<h4>Output:</h4>
 
 {% endblock %}

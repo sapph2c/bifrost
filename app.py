@@ -48,13 +48,17 @@ def add_agent(os, host_name, ip, ram):
         return agent.id
 
 
-def add_command(queue: CommandQueue, command):
-    queue.command = command
+# def add_command(queue: CommandQueue, command):
+#     queue.command = command
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 @login_required
 def home():  # put application's code here
+    if request.method == "POST":
+        command = request.form['command']
+        db.session.query(CommandQueue).all()
+
     agents = db.session.query(Agent).all()
     return render_template('index.html', agents=agents)
 
@@ -86,6 +90,13 @@ def command_out():
         output = request.json['output']
         print(output)
         return 'Received'
+
+
+@app.route('/api/1.1/send_command', methods=['GET', 'POST'])
+def send_command():
+    if request.method == 'POST':
+        print(request.data)
+        return '1'
 
 
 @app.route('/welcome')
