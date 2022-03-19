@@ -1,4 +1,4 @@
-# Bifrost
+# ❄️ Bifrost ❄️
 
 Bifrost is a Flask app that allows communication between implants and a centralized command
 and control server.
