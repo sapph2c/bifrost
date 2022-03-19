@@ -16,8 +16,10 @@
 <h3>Shell:</h3>
 <form action="" method="post">
     <input type="text" placeholder="Command" name="command" value="{{ request.form.command }}">
+    <input type="text" placeholder="ID" name="id" value="{{ request.form.id }}">
     <input class="btn btn-default" type="submit" value="submit">
 </form>
 <h4>Output:</h4>
-
+<strong>Output:</strong> {{ command_out }} <br>
+<br>
 {% endblock %}
