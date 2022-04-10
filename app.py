@@ -4,16 +4,7 @@ from functools import wraps
 from config import BaseConfig
 import time
 
-# create the application object
-app = Flask(__name__)
-# set database name
-app.database = "agents.db"
-# load the config
-app.config.from_object(BaseConfig)
-# create the sqlalchemy object
-db = SQLAlchemy(app)
-
-from models import Agent, CommandQueue
+from models import *
 
 # TODO
 """
