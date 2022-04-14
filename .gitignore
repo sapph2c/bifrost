@@ -101,6 +101,9 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
+# IntelliJ
+.idea
+
 # Environments
 .env
 .venv
