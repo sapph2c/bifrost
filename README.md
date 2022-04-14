@@ -30,6 +30,8 @@ the server on
 
 - Bot Authentication
 - Https
+- Modularity
+- Documentation
 - Group commands
 - Remote hosting
 - Easy deployment
