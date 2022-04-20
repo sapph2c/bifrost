@@ -16,16 +16,38 @@ db = SQLAlchemy(app)
 class Agent(db.Model):
     __tablename__ = "AGENTS"
     id = db.Column(db.Integer, primary_key=True)
-    os = db.Column(db.String, nullable=False)
-    host_name = db.Column(db.String, nullable=True)
-    ip = db.Column(db.String, nullable=True)
+    hostname = db.Column(db.String, nullable=False)
+    uptime = db.Column(db.String, nullable=True)
+    bootTime = db.Column(db.String, nullable=True)
+    procs = db.Column(db.String, nullable=True)
+    os = db.Column(db.String, nullable=True)
+    platform = db.Column(db.String, nullable=True)
+    platformFamily = db.Column(db.String, nullable=True)
+    platformVersion = db.Column(db.String, nullable=True)
+    kernelVersion = db.Column(db.String, nullable=True)
+    kernelArch = db.Column(db.String, nullable=True)
+    virtualizationSystem = db.Column(db.String, nullable=True)
+    virtualizationRole = db.Column(db.String, nullable=True)
+    hostID = db.Column(db.String, nullable=True)
     ram = db.Column(db.String, nullable=True)
+    ip = db.Column(db.String, nullable=True)
 
-    def __init__(self, os, host_name, ip, ram):
+    def __init__(self, hostname, uptime, bootTime, procs, os, platform, platformFamily, platformVersion, kernelVersion, kernelArch, virtualizationSystem, virtualizationRole, hostID, ram, ip):
+        self.hostname = hostname
+        self.uptime = uptime
+        self.bootTime = bootTime 
+        self.procs = procs
         self.os = os
-        self.host_name = host_name
-        self.ip = ip
+        self.platform = platform
+        self.platformFamily = platformFamily
+        self.platformVersion = platformVersion
+        self.kernelVersion = kernelVersion
+        self.kernelArch = kernelArch
+        self.virtualizationSystem = virtualizationSystem
+        self.virtualizationRole = virtualizationRole
+        self.hostID = hostID
         self.ram = ram
+        self.ip = ip
 
     def __repr__(self):
         return f"os: {self.os}, host_name: {self.host_name}, ip: {self.ip}, ram: {self.ram}, id: {self.id}"

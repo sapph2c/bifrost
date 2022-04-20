@@ -26,9 +26,12 @@ def login_required(f):
     return wrap
 
 
-def add_agent(system, host_name, ip, ram):
-    if not db.session.query(db.exists().where(Agent.ip == ip)).scalar():
-        agent = Agent(system, host_name, ip, ram)
+def add_agent(agent_dict):
+    if not db.session.query(db.exists().where(Agent.ip == agent_dict['IP'])).scalar():
+        args = [str(agent_dict['Stats'][key]) for key in agent_dict['Stats']]
+        args += [str(agent_dict['total'])]
+        args += [agent_dict['IP']]
+        agent = Agent(*args)
         db.session.add(agent)
         db.session.flush()
         agent_id = agent.id
@@ -63,7 +66,7 @@ def agent_add():
     print(request.method)
     if request.method == 'POST':
         agent_dict = request.json
-        id = add_agent(agent_dict['os'], agent_dict['host_name'], agent_dict['ip'], agent_dict['ram'])
+        id = add_agent(agent_dict)
         return str(id)
 
 
