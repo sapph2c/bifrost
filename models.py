@@ -53,16 +53,19 @@ class Agent(db.Model):
         return f"os: {self.os}, host_name: {self.hostname}, ip: {self.ip}, ram: {self.ram}, id: {self.id}"
 
 
-class CommandQueue(db.Model):
-    __tablename__ = "COMMAND QUEUE"
-    id = db.Column(db.String, primary_key=True)
+class Commands(db.Model):
+    __tablename__ = "COMMANDS"
+    commandID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    implantID = db.Column(db.String, nullable=False)
     command = db.Column(db.String, nullable=True)
     output = db.Column(db.String, nullable=True)
+    retrieved = db.Column(db.String, nullable=True)
 
-    def __init__(self, id, command=None, output=None):
-        self.id = id
+    def __init__(self, implantID, command=None, output=None, retrieved=False):
+        self.implantID = implantID
         self.command = command
         self.output = output
+        self.retrieved = retrieved
 
     def __repr__(self):
         return f"id: {self.id}, command: {self.command}, output: {self.output}"
