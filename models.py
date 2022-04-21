@@ -50,7 +50,7 @@ class Agent(db.Model):
         self.ip = ip
 
     def __repr__(self):
-        return f"os: {self.os}, host_name: {self.host_name}, ip: {self.ip}, ram: {self.ram}, id: {self.id}"
+        return f"os: {self.os}, host_name: {self.hostname}, ip: {self.ip}, ram: {self.ram}, id: {self.id}"
 
 
 class CommandQueue(db.Model):
