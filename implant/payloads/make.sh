@@ -1,5 +1,5 @@
 #!/bin/bash
-cd "$(dirname "$0")"
+cd /home/lights0ut/RedTeam/Bifrost/implant/payloads
 
 while getopts h:s:j: flag
 do
@@ -10,4 +10,4 @@ do
   esac
 done
 
-go build -ldflags="-X 'main.IP=$hostname' -X 'main.SleepTime=$sleepTime'"
+/usr/bin/go build -ldflags="-X 'main.IP=$hostname' -X 'main.SleepTime=$sleepTime'"

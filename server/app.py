@@ -40,7 +40,7 @@ class MyForm(FlaskForm):
 
 
 def build_implant(ip="127.0.0.1", sleepTime="0"):
-    subprocess.Popen([f"implant/payloads/make.sh -h {ip} -s {sleepTime}"], shell=True)
+    subprocess.Popen([f"../implant/payloads/make.sh -h {ip} -s {sleepTime}"], shell=True)
 
 
 def add_agent(agent_dict):
