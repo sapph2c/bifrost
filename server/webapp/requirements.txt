@@ -1,0 +1,14 @@
+click==8.1.3
+dnspython==2.2.1
+Flask==2.1.2
+Flask-SQLAlchemy==2.5.1
+Flask-WTF==1.0.1
+greenlet==1.1.2
+is-disposable-email==1.0.0
+itsdangerous==2.1.2
+Jinja2==3.1.2
+MarkupSafe==2.1.1
+SQLAlchemy==1.4.36
+Werkzeug==2.1.2
+WTForms==3.0.1
+wtforms-validators==1.0.0

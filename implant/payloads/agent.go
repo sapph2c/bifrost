@@ -48,6 +48,7 @@ func register(serverIP string) string {
 	//resp_register, _ := http.NewRequest(http.MethodGet, "http://"+serverIP+":5000/api/1.1/add_agent", responseBody)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	resp_register, _ := http.Post("https://"+serverIP+"/api/1.1/add_agent", "application/json", responseBody)
+	resp_register.Close = true
 	body2, _ := ioutil.ReadAll(resp_register.Body)
 	agent_id := string(body2)
 	return agent_id
@@ -60,6 +61,7 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 	postBody := bytes.NewBuffer(post_body)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	resp_query, _ := http.Post("https://"+serverIP+"/api/1.1/get_command", "application/json", postBody)
+	resp_query.Close = true
 	resp, _ := ioutil.ReadAll(resp_query.Body)
 	out := string(resp)
 	tokens := strings.Split(out, ",")
