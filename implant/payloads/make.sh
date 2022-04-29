@@ -1,5 +1,4 @@
 #!/bin/bash
-cd /home/lights0ut/RedTeam/Bifrost/implant/payloads
 
 while getopts h:s:j: flag
 do
@@ -10,4 +9,6 @@ do
   esac
 done
 
-/usr/bin/go build -ldflags="-X 'main.IP=$hostname' -X 'main.SleepTime=$sleepTime'"
+HOME=/home/lights0ut/
+cd /home/lights0ut/RedTeam/Bifrost/implant/payloads
+PATH=$PATH:/usr/local/go/bin GOPATH=/home/lights0ut/RedTeam/Bifrost/implant /usr/bin/go build -buildvcs=false -ldflags="-X 'main.IP=$hostname' -X 'main.SleepTime=$sleepTime'"

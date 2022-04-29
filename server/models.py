@@ -1,7 +1,6 @@
 # create the application object
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-
 from config import BaseConfig
 
 app = Flask(__name__)
@@ -60,12 +59,14 @@ class Commands(db.Model):
     command = db.Column(db.String, nullable=True)
     output = db.Column(db.String, nullable=True)
     retrieved = db.Column(db.String, nullable=True)
+    displayed = db.Column(db.String, nullable=True)
 
-    def __init__(self, implantID, command=None, output=None, retrieved=False):
+    def __init__(self, implantID, command=None, output=None, retrieved=False, displayed=False):
         self.implantID = implantID
         self.command = command
         self.output = output
         self.retrieved = retrieved
+        self.displayed = displayed
 
     def __repr__(self):
         return f"id: {self.id}, command: {self.command}, output: {self.output}"

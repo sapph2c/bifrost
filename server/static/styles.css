@@ -11329,107 +11329,26 @@ body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
 }form {
     margin: 10px;
 }
-body .shell {
-    width: 400px;
-    height: 200px;
+/*
+ * style based on http://js13kgames.com/entries/lost-in-cyberspace
+ */
+body {
+	margin: 0;
 }
-body .shell .terminal {
-    height: calc(100% - 29px);
-    padding: 10px;
-    --size: 1.1;
-    /*
-     * padding bottom 0 on terminal and margin
-     * on .cmd will be in version 2.0.1
-     * that fixes FireFox issue
-     */
-    padding-bottom: 0;
-}
-body .shell .terminal .cmd {
-    margin-bottom: 10px;
-}
-.shell .typed-cursor, .shell .cursor {
-    background: transparent;
-}
-.shell > .status-bar .title {
-    cursor: move;
+#term {
+    height: 100vh;
+    --background: #000000;
+    --size: 1.5;
+    padding: 20px;
 }
 /*
- * fix to shell.js to center title to free space
+ * reference: https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-within
  */
-.shell.windows .status-bar .title {
-    right: 106px;
+.cmd:focus-within .prompt {
+    color: red;
 }
-@supports (--css: variables) {
-    .shell .terminal {
-        --color: #aaa;
-    }
-    .shell.ubuntu .terminal {
-        --background: #300924;
-    }
-    .shell.osx .content.terminal {
-        --background: #222;
-    }
-    .shell.light .content.terminal {
-        --background: white;
-        --color: black;
-    }
-    /*
-    * windows and custom are the last ones so
-    * they don't get overwritten by light
-    */
-    .shell.windows .content.terminal {
-        --background: black;
-        --color: white;
-        --animation: terminal-underline;
-    }   
-    .shell.custom .content.terminal {
-        --background: #292929;
-        --color: #aaa;
-    }
+.terminal a:hover {
+    background: #0F60FF;
+    color: var(--background, #aaa);
+    text-decoration: none;
 }
-/*
- * overwrite shell.js style because shell.js   
- * selectors are stronger then terminal ones
- */
-.cmd span.cursor {
-    animation: none;
-    width: auto;
-    background-color: var(--background, #000);
-}
-.shell:not(.light) terminal.content,
-.shell.osx.dark .content,
-.shell.ubuntu:not(.light) .content {
-    background-color: var(--background, #222) !important;
-}
-.shell .terminal.content {
-    font-size: 12px;
-}
-.cmd {
-    background-color: inherit;
-}
-@supports (--css: variables) {
-    .shell .terminal.content {
-        font-size: calc(var(--size, 1) * 12px);
-    }
-}
-/* fix for Firefox */
-.terminal > .resizer, .terminal > .font .resizer {
-    visibility: visible;
-    pointer-events: none;
-}
-.terminal::-webkit-scrollbar-track
-{
-	border: 1px solid var(--color, #aaa);
-	background-color: var(--background);
-}
-.terminal::-webkit-scrollbar
-{
-	width: 10px;
-	background-color: var(--background);
-}
-.terminal::-webkit-scrollbar-thumb
-{
-	background-color: var(--color, #aaa);
-}
-
-

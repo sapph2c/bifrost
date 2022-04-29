@@ -14,6 +14,7 @@
   <script src="https://unpkg.com/js-polyfills/keyboard.js"></script>
   <script src="https://unpkg.com/resize-observer-polyfill@1.5.1/dist/ResizeObserver.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/aaronbarker/css-variables-polyfill@master/css-var-polyfill.js"></script>
+  <script src="https://rawgit.com/jcubic/jquery.terminal/master/js/jquery.terminal.js"></script>
   <title>Simple Sidebar - Start Bootstrap Template</title>
   <!-- Favicon-->
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
@@ -23,6 +24,7 @@
   <link href="https://code.jquery.com/ui/1.12.1/themes/cupertino/jquery-ui.css" rel="stylesheet" />
   <link href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css" rel="stylesheet" />
   <link href="https://netdna.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+  <link href="https://rawgit.com/jcubic/jquery.terminal/master/css/jquery.terminal.css" />
 </head>
 
 <body>
@@ -92,37 +94,10 @@
       </div>
       <!-- Page content-->
       <div class="container-fluid">
-        <form>
-          <label for="type">Window Type:</label>
-          <select id="type">
-            <option value="osx">osx</option>
-            <option value="ubuntu" selected>ubuntu</option>
-            <option value="windows">windows</option>
-            <option value="custom">custom</option>
-          </select>
-          <label for="dark">dark</label>
-          <input type="checkbox" id="dark" checked />
-        </form>
-        <!-- shell.js terminal window -->
-        <div class="shell ubuntu dark shadow">
-          <div class="status-bar">
-            <div class="buttons">
-              <a href="javascript:;" class="close" title="Close">
-                <i class="fa fa-times"></i>
-              </a>
-              <a href="javascript:;" class="minimize" title="Minimize">
-                <i class="fa fa-minus"></i>
-              </a>
-              <a href="javascript:;" class="enlarge" title="Enlarge">
-                <i class="fa fa-plus"></i>
-              </a>
-            </div>
-            <div class="title">user@host: ~</div>
-          </div>
-          <div class="content"></div>
-        </div>
 
-
+        <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js">
+        </script>
+        <div id="term"></div>
         <h1 class="mt-4">Simple Sidebar</h1>
         <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on
           larger screens. When toggled using the button below, the menu will change.</p>

