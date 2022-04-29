@@ -33,12 +33,11 @@
     <div class="border-end bg-white" id="sidebar-wrapper">
       <div class="sidebar-heading border-bottom bg-light">Bifrost</div>
       <div class="list-group list-group-flush">
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Dashboard</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Shortcuts</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Overview</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Events</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Profile</a>
-        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Status</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/">Dashboard</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/config">Config</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/payload">Payload</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/bingus">Bingus</a>
+        <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/logout">Logout</a>
       </div>
     </div>
     <!-- Page content wrapper-->
@@ -68,48 +67,35 @@
           </div>
         </div>
       </nav>
-      <div class="card text-center">
-        <div class="card-header">
-          System Information
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">{{ agent.hostname }}</h5>
-          <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">{{ agent.ip }}</li>
-          <li class="list-group-item">{{ agent.os }}</li>
-          <li class="list-group-item">{{ agent.ram }}</li>
-          <li class="list-group-item">{{ agent.platform }}</li>
-          <li class="list-group-item">{{ agent.kernelVersion }}</li>
-          <li class="list-group-item">{{ agent.kernelArch }}</li>
-          <li class="list-group-item">{{ agent.bootTime }}</li>
-          <li class="list-group-item">{{ agent.uptime }}</li>
-          <li class="list-group-item">{{ agent.procs }}</li>
-
-        </ul>
-        <div class="card-footer text-muted">
-          Bingus Mode
-        </div>
+      <div class="card-footer text-muted">
+        System Information
       </div>
-      <!-- Page content-->
-      <div class="container-fluid">
-
-        <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js">
-        </script>
-        <div id="term"></div>
-        <h1 class="mt-4">Simple Sidebar</h1>
-        <p>The starting state of the menu will appear collapsed on smaller screens, and will appear non-collapsed on
-          larger screens. When toggled using the button below, the menu will change.</p>
-        <p>
-          Make sure to keep all page content within the
-          <code>#page-content-wrapper</code>
-          . The top navbar is optional, and just for demonstration. Just create an element with the
-          <code>#sidebarToggle</code>
-          ID which will toggle the menu when clicked.
-        </p>
-      </div>
+      <table class="table table-sm table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">IP</th>
+            <th scope="col">OS</th>
+            <th scope="col">RAM</th>
+            <th scope="col">Kernel Version</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ agent.ip }}</td>
+            <td>{{ agent.platform }} {{ agent.os }} </td>
+            <td>{{ agent.ram }}</td>
+            <td>{{ agent.kernelVersion}} {{ agent.kernelArch }}</td>
+          </tr>
+      </table>
     </div>
+    <!-- Page content-->
+    <div class="container-fluid">
+
+      <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js">
+      </script>
+      <div id="term"></div>
+    </div>
+  </div>
   </div>
   <!-- Bootstrap core JS-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

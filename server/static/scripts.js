@@ -24,9 +24,34 @@ window.addEventListener('DOMContentLoaded', event => {
   }
 
 });
+var banner = `
 
-//keyboardeventKeyPolyfill.polyfill();
+ ▄▄▄▄    ██▓  █████▒██▀███   ▒█████    ██████ ▄▄▄█████▓
+▓█████▄ ▓██▒▓██   ▒▓██ ▒ ██▒▒██▒  ██▒▒██    ▒ ▓  ██▒ ▓▒
+▒██▒ ▄██▒██▒▒████ ░▓██ ░▄█ ▒▒██░  ██▒░ ▓██▄   ▒ ▓██░ ▒░
+▒██░█▀  ░██░░▓█▒  ░▒██▀▀█▄  ▒██   ██░  ▒   ██▒░ ▓██▓ ░ 
+░▓█  ▀█▓░██░░▒█░   ░██▓ ▒██▒░ ████▓▒░▒██████▒▒  ▒██▒ ░ 
+░▒▓███▀▒░▓   ▒ ░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░  ▒ ░░   
+▒░▒   ░  ▒ ░ ░       ░▒ ░ ▒░  ░ ▒ ▒░ ░ ░▒  ░ ░    ░    
+ ░    ░  ▒ ░ ░ ░     ░░   ░ ░ ░ ░ ▒  ░  ░  ░    ░      
+ ░       ░            ░         ░ ░        ░           
+      ░
+
+`
 var term = $('#term').terminal(function(cmd, term) {
+  // help
+  if (cmd == 'help') {
+    term.echo(`\nAvailable commands are:
+      command - Execute commands on the host
+      banner - Display awesome ASCII art
+      help - List available commands
+      exit - Return to the main menu\n`)
+  }
+  // display awesome ASCII art
+  if (cmd == 'banner') {
+    term.echo(banner)
+  }
+  // run commands on the system
   if (cmd == 'command') {
     term.push(function(cmd, term) {
       if (cmd == 'exit') {
@@ -47,21 +72,7 @@ var term = $('#term').terminal(function(cmd, term) {
   }
 }, {
   name: 'autocomplete_error_example',
-  greetings: `
-
- ▄▄▄▄    ██▓  █████▒██▀███   ▒█████    ██████ ▄▄▄█████▓
-▓█████▄ ▓██▒▓██   ▒▓██ ▒ ██▒▒██▒  ██▒▒██    ▒ ▓  ██▒ ▓▒
-▒██▒ ▄██▒██▒▒████ ░▓██ ░▄█ ▒▒██░  ██▒░ ▓██▄   ▒ ▓██░ ▒░
-▒██░█▀  ░██░░▓█▒  ░▒██▀▀█▄  ▒██   ██░  ▒   ██▒░ ▓██▓ ░ 
-░▓█  ▀█▓░██░░▒█░   ░██▓ ▒██▒░ ████▓▒░▒██████▒▒  ▒██▒ ░ 
-░▒▓███▀▒░▓   ▒ ░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░  ▒ ░░   
-▒░▒   ░  ▒ ░ ░       ░▒ ░ ▒░  ░ ▒ ▒░ ░ ░▒  ░ ░    ░    
- ░    ░  ▒ ░ ░ ░     ░░   ░ ░ ░ ░ ▒  ░  ░  ░    ░      
- ░       ░            ░         ░ ░        ░           
-      ░
-
-`,
-  prompt: '> ',
-  completion: ["autocomplete001", "autocomplete002", "autocomplete003", "autocomplete004"],
+  greetings: banner,
+  prompt: 'Bifrost> ',
   checkArity: false
 });
