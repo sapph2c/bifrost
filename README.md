@@ -10,21 +10,13 @@ Clone the repo
 ```
 git clone https://github.com/AshleyNikr/Bifrost.git
 ```
-Change into the C2 directory
+Change into the server directory
 ```
-cd Bifrost
+cd Bifrost/server
 ```
-Install dependencies
+Start the docker container
 ```
-pip install -r requirements.txt
-```
-Create the database
-```
-python3 db_create.py
-```
-Start the server
-```
-flask run --host=0.0.0.0
+sudo docker-compose up --force-recreate --build
 ```
 ### Client side:
 Run the implant on the agent
