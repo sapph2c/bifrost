@@ -1,4 +1,13 @@
-# ❄️ Bifrost ❄️
+ ▄▄▄▄    ██▓  █████▒██▀███   ▒█████    ██████ ▄▄▄█████▓
+▓█████▄ ▓██▒▓██   ▒▓██ ▒ ██▒▒██▒  ██▒▒██    ▒ ▓  ██▒ ▓▒
+▒██▒ ▄██▒██▒▒████ ░▓██ ░▄█ ▒▒██░  ██▒░ ▓██▄   ▒ ▓██░ ▒░
+▒██░█▀  ░██░░▓█▒  ░▒██▀▀█▄  ▒██   ██░  ▒   ██▒░ ▓██▓ ░ 
+░▓█  ▀█▓░██░░▒█░   ░██▓ ▒██▒░ ████▓▒░▒██████▒▒  ▒██▒ ░ 
+░▒▓███▀▒░▓   ▒ ░   ░ ▒▓ ░▒▓░░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░  ▒ ░░   
+▒░▒   ░  ▒ ░ ░       ░▒ ░ ▒░  ░ ▒ ▒░ ░ ░▒  ░ ░    ░    
+ ░    ░  ▒ ░ ░ ░     ░░   ░ ░ ░ ░ ▒  ░  ░  ░    ░      
+ ░       ░            ░         ░ ░        ░           
+      ░
 
 Bifrost is a Flask app that allows communication between implants and a centralized command
 and control server.
@@ -13,6 +22,10 @@ git clone https://github.com/AshleyNikr/Bifrost.git
 Change into the server directory
 ```
 cd Bifrost/server
+```
+Make sure the docker service is running
+```
+sudo systemctl restart docker.service
 ```
 Start the docker container
 ```
