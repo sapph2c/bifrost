@@ -2,8 +2,10 @@ import requests
 
 """
     pwnboard integration
-    HTTP request to host/generic containing the IP address of bot (string) and name of implant
+    HTTP request to host/generic containing the IP
+    address of bot (string) and name of implant
 """
+
 
 def send_update(ip, host, name="BifrostBridge"):
     host = "http://" + host + "/generic"
@@ -14,5 +16,3 @@ def send_update(ip, host, name="BifrostBridge"):
     except Exception as E:
         print(E)
         return False
-
-

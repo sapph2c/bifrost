@@ -1,7 +1,6 @@
-# create the application object
+from config import BaseConfig
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from config import BaseConfig
 
 app = Flask(__name__)
 # set database name
@@ -13,6 +12,9 @@ db = SQLAlchemy(app)
 
 
 class Agent(db.Model):
+    """Class that holds agent information in an AGENTS table
+
+    """
     __tablename__ = "AGENTS"
     id = db.Column(db.Integer, primary_key=True)
     hostname = db.Column(db.String, nullable=False)
@@ -31,10 +33,13 @@ class Agent(db.Model):
     ram = db.Column(db.String, nullable=True)
     ip = db.Column(db.String, nullable=True)
 
-    def __init__(self, hostname, uptime, bootTime, procs, os, platform, platformFamily, platformVersion, kernelVersion, kernelArch, virtualizationSystem, virtualizationRole, hostID, ram, ip):
+    def __init__(self, hostname, uptime, bootTime, procs, os, platform,
+                 platformFamily, platformVersion, kernelVersion,
+                 kernelArch, virtualizationSystem,
+                 virtualizationRole, hostID, ram, ip):
         self.hostname = hostname
         self.uptime = uptime
-        self.bootTime = bootTime 
+        self.bootTime = bootTime
         self.procs = procs
         self.os = os
         self.platform = platform
@@ -48,11 +53,11 @@ class Agent(db.Model):
         self.ram = ram
         self.ip = ip
 
-    def __repr__(self):
-        return f"os: {self.os}, host_name: {self.hostname}, ip: {self.ip}, ram: {self.ram}, id: {self.id}"
-
 
 class Commands(db.Model):
+    """Class that holds command information in a COMMANDS table
+
+    """
     __tablename__ = "COMMANDS"
     commandID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     implantID = db.Column(db.String, nullable=False)
@@ -61,12 +66,10 @@ class Commands(db.Model):
     retrieved = db.Column(db.String, nullable=True)
     displayed = db.Column(db.String, nullable=True)
 
-    def __init__(self, implantID, command=None, output=None, retrieved=False, displayed=False):
+    def __init__(self, implantID, command=None,
+                 output=None, retrieved=False, displayed=False):
         self.implantID = implantID
         self.command = command
         self.output = output
         self.retrieved = retrieved
         self.displayed = displayed
-
-    def __repr__(self):
-        return f"id: {self.id}, command: {self.command}, output: {self.output}"
