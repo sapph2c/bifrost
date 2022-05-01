@@ -46,10 +46,8 @@ the server on
 ### Planned Features:
 
 - Bot Authentication
-- Https
 - Modularity
 - Documentation
 - Group commands
 - Remote hosting
-- Easy deployment
 - Nil goated
