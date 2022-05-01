@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os/exec"
+	"os/user"
 	"strconv"
 	"strings"
 	"time"
@@ -23,14 +24,16 @@ var (
 )
 
 type system_info struct {
-	Stats  *host.InfoStat
-	Memory uint64 `json:"total"`
-	IP     string
+	Stats    *host.InfoStat
+	Memory   uint64 `json:"total"`
+	IP       string
+	USERNAME string
 }
 
 func register(serverIP string) string {
 	// Gather system info
 	stats, _ := host.Info()
+	user, _ := user.Current()
 	v, _ := mem.VirtualMemory()
 	// get ip
 	resp, _ := http.Get("http://api.ipify.org")
@@ -41,7 +44,9 @@ func register(serverIP string) string {
 		stats,
 		v.Total,
 		ip,
+		user.Name,
 	}
+	fmt.Printf("%s", user.Name)
 	postBody, _ := json.Marshal(host_info)
 	responseBody := bytes.NewBuffer(postBody)
 	//fmt.Printf("%s", serverIP)

@@ -32,11 +32,12 @@ class Agent(db.Model):
     hostID = db.Column(db.String, nullable=True)
     ram = db.Column(db.String, nullable=True)
     ip = db.Column(db.String, nullable=True)
+    username = db.Column(db.String, nullable=True)
 
     def __init__(self, hostname, uptime, bootTime, procs, os, platform,
                  platformFamily, platformVersion, kernelVersion,
                  kernelArch, virtualizationSystem,
-                 virtualizationRole, hostID, ram, ip):
+                 virtualizationRole, hostID, ram, ip, username):
         self.hostname = hostname
         self.uptime = uptime
         self.bootTime = bootTime
@@ -52,6 +53,7 @@ class Agent(db.Model):
         self.hostID = hostID
         self.ram = ram
         self.ip = ip
+        self.username = username
 
 
 class Commands(db.Model):
