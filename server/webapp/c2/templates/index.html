@@ -70,14 +70,20 @@
         <div class="container">
           <div class="row">
             {% for agent in agents %}
-            <div class="col-sm-6 col-lg-4 mb-3">
-              <div class="card mb-2 h-100">
+            <div class="col-sm-3 col-lg-2 mb-2">
+              <div class="card mb-2 h-100" id="{{ agent.id }}">
+                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#00FF00";</script>
+                {% if agent.isAlive == False %}
+                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "FF0000";</script>
+                {% endif %}
                 <div class="card-body">
-                  <a class="card-title" href="/bot{{ agent.id }}">{{ agent.ip }} </a>
+                  <a class="card-title" href="/bot{{ agent.id }}">{{ agent.ip }}</a>
                   <p class="card-text">
                     Host: {{ agent.hostname }}<br>
                     Session: {{ agent.username }}<br>
                     OS: {{ agent.platform }} {{ agent.os }}<br>
+                    Last Seen: {{ agent.lastSeen }}<br>
+                    Status: {{ agent.isAlive }}
                   </p>
                 </div>
               </div>
