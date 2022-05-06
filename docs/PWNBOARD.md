@@ -1,7 +1,7 @@
 # Pwnboard
 
 Shows the full list of implants that are calling back to the server
-![](docs/img/pwnboard.png)
+![](img/pwnboard.png)
 
 ## Includes
 
