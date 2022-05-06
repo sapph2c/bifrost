@@ -1,5 +1,3 @@
-<html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -67,36 +65,40 @@
       </nav>
       <!-- Page content-->
       <div class="container-fluid">
-        <div class="container">
-          <div class="row">
-            {% for agent in agents %}
-            <div class="col-sm-3 col-lg-2 mb-2">
-              <div class="card mb-2 h-100" id="{{ agent.id }}">
-                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#ff2400";</script>
-                <script>document.getElementById("{{ agent.id }}").style.color = "white";</script>
-                {% if agent.isAlive == False %}
-                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#007FFF";</script>
-                {% endif %}
-                <div class="card-body">
-                  <a class="card-title" href="/bot{{ agent.id }}" style="color:white;font-size:20px">{{ agent.ip }}</a>
-                  <p class="card-text" style="font-size:15px">
-                    Host: {{ agent.hostname }}<br>
-                    Session: {{ agent.username }}<br>
-                    OS: {{ agent.platform }} {{ agent.os }}<br>
-                    Last Seen: {{ agent.lastSeen }}<br>
-                    Status: {{ agent.isAlive }}
-                  </p>
-                </div>
-              </div>
+        <h1 class="mt-4">Register User</h1>
+        <form class="form-horizontal" action="" method="post">
+          <div class="form-group">
+            <label class="control-label col-sm-2">email:</label>
+            <div class="col-sm-10">
+              {{ form.email }}
             </div>
-            {% endfor %}
           </div>
-        </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2">name:</label>
+            <div class="col-sm-10">
+              {{ form.name }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2">password:</label>
+            <div class="col-sm-10">
+              {{ form.password }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-default">Submit</button>
+            </div>
+          </div>
+        </form>
       </div>
-      <!-- Bootstrap core JS-->
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-      <!-- Core theme JS-->
-      <script src="static/scripts.js"></script>
+    </div>
+  </div>
+  <!-- Bootstrap core JS-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Core theme JS-->
+  <script src="static/scripts.js"></script>
 </body>
 
 </html>

@@ -1,12 +1,12 @@
-from app import db
+import models
 
 
 def create_database():
     """Creates the Agent and Commands tables in the backend database
 
     """
-    db.create_all()
-    db.session.commit()
+    models.db.create_all()
+    models.db.session.commit()
 
 
 if __name__ == "__main__":
