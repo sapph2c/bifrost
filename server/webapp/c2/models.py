@@ -1,7 +1,16 @@
+from config import BaseConfig
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import constants
 
-db = SQLAlchemy(constants.app)
+
+app = Flask(__name__)
+# set database name
+app.database = "agents.db"
+# load the config
+app.config.from_object(BaseConfig)
+# create the sqlalchemy object
+db = SQLAlchemy(app)
+
 
 class Agent(db.Model):
     """Class that holds agent information in an AGENTS table
@@ -72,13 +81,3 @@ class Commands(db.Model):
         self.output = output
         self.retrieved = retrieved
         self.displayed = displayed
-
-
-class User(db.Model):
-    """Class that holds an authenticated user
-    """
-    __tablename__ = "USERS"
-    userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    email = db.Column(db.String, unique=True)
-    password = db.Column(db.String)
-    name = db.Column(db.String)

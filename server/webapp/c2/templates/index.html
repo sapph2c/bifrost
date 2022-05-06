@@ -72,14 +72,14 @@
             {% for agent in agents %}
             <div class="col-sm-3 col-lg-2 mb-2">
               <div class="card mb-2 h-100" id="{{ agent.id }}">
-                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#ff2400";</script>
+                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#007FFF";</script>
                 <script>document.getElementById("{{ agent.id }}").style.color = "white";</script>
                 {% if agent.isAlive == False %}
-                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#007FFF";</script>
+                <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#ff2400";</script>
                 {% endif %}
                 <div class="card-body">
-                  <a class="card-title" href="/bot{{ agent.id }}" style="color:white;font-size:20px">{{ agent.ip }}</a>
-                  <p class="card-text" style="font-size:15px">
+                  <a class="card-title" href="/bot{{ agent.id }}" style="color:white">{{ agent.ip }}</a>
+                  <p class="card-text">
                     Host: {{ agent.hostname }}<br>
                     Session: {{ agent.username }}<br>
                     OS: {{ agent.platform }} {{ agent.os }}<br>
