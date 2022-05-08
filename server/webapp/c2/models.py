@@ -1,15 +1,4 @@
-from config import BaseConfig
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-
-app = Flask(__name__)
-# set database name
-app.database = "agents.db"
-# load the config
-app.config.from_object(BaseConfig)
-# create the sqlalchemy object
-db = SQLAlchemy(app)
+from c2 import db
 
 
 class Agent(db.Model):
