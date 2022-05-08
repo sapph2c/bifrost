@@ -3,8 +3,10 @@ from flask import render_template, redirect, url_for, request, session, flash
 from flask_wtf import FlaskForm
 from functools import wraps
 from wtforms import StringField
+from wtforms.fields.simple import PasswordField
+from werkzeug.security import check_password_hash, generate_password_hash
 from c2 import app, db
-from c2.models import Agent, Commands
+from c2.models import Agent, Commands, User
 
 import os
 import subprocess
@@ -39,6 +41,14 @@ class MyForm(FlaskForm):
     """
     ip = StringField('IP')
     sleep = StringField('Sleep Time')
+
+
+class AuthForm(FlaskForm):
+    """Form used to register a user
+    """
+    email = StringField('email')
+    name = StringField('name')
+    password = PasswordField('password')
 
 
 def build_implant(ip="127.0.0.1", sleepTime="0"):
@@ -176,8 +186,12 @@ def login():
     """
     error = None
     if request.method == 'POST':
-        if request.form['username'] != 'admin' or \
-           request.form['password'] != 'admin':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter(username == username).first()
+        if not user:
+            error = "Account not found"
+        elif not check_password_hash(user.password, password):
             error = "Invalid credentials. Please try again."
         else:
             session['logged_in'] = True
@@ -195,6 +209,33 @@ def logout():
     session.pop('logged_in', None)
     flash('You were just logged out!')
     return redirect(url_for('welcome'))
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    """Endpoint that allows a user to register an account
+    """
+    form = AuthForm()
+
+    if request.method == 'POST':
+        email = request.form['email']
+        name = request.form['name']
+        password = request.form['password']
+
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            return "BINGUS: ALREADY REGISTERED"
+
+        new_user = User(email=email, name=name,
+                        password=generate_password_hash
+                        (password, method='sha256'))
+
+        db.session.add(new_user)
+        db.session.commit()
+        return redirect(url_for('login'))
+
+    return render_template('signup.html', form=form)
 
 
 def check_agent_alive():

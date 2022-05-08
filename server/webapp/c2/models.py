@@ -70,3 +70,13 @@ class Commands(db.Model):
         self.output = output
         self.retrieved = retrieved
         self.displayed = displayed
+
+
+class User(db.Model):
+    """Class that holds an authenticated user
+    """
+    __tablename__ = "USERS"
+    userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    email = db.Column(db.String, unique=True)
+    password = db.Column(db.String)
+    name = db.Column(db.String)
