@@ -2,9 +2,8 @@ from c2 import db
 
 
 class Agent(db.Model):
-    """Class that holds agent information in an AGENTS table
+    """Class that holds agent information in an AGENTS table"""
 
-    """
     __tablename__ = "AGENTS"
     id = db.Column(db.Integer, primary_key=True)
     hostname = db.Column(db.String, nullable=False)
@@ -27,10 +26,26 @@ class Agent(db.Model):
     lastSeen = db.Column(db.String, nullable=True)
     sleepTime = db.Column(db.Integer, nullable=True)
 
-    def __init__(self, hostname, uptime, bootTime, procs, os, platform,
-                 platformFamily, platformVersion, kernelVersion,
-                 kernelArch, virtualizationSystem,
-                 virtualizationRole, hostID, ram, ip, username, sleepTime):
+    def __init__(
+        self,
+        hostname,
+        uptime,
+        bootTime,
+        procs,
+        os,
+        platform,
+        platformFamily,
+        platformVersion,
+        kernelVersion,
+        kernelArch,
+        virtualizationSystem,
+        virtualizationRole,
+        hostID,
+        ram,
+        ip,
+        username,
+        sleepTime,
+    ):
         self.hostname = hostname
         self.uptime = uptime
         self.bootTime = bootTime
@@ -53,8 +68,8 @@ class Agent(db.Model):
 
 
 class Commands(db.Model):
-    """Class that holds command information in a COMMANDS table
-    """
+    """Class that holds command information in a COMMANDS table"""
+
     __tablename__ = "COMMANDS"
     commandID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     implantID = db.Column(db.String, nullable=False)
@@ -63,8 +78,9 @@ class Commands(db.Model):
     retrieved = db.Column(db.String, nullable=True)
     displayed = db.Column(db.String, nullable=True)
 
-    def __init__(self, implantID, command=None,
-                 output=None, retrieved=False, displayed=False):
+    def __init__(
+        self, implantID, command=None, output=None, retrieved=False, displayed=False
+    ):
         self.implantID = implantID
         self.command = command
         self.output = output
@@ -73,8 +89,8 @@ class Commands(db.Model):
 
 
 class User(db.Model):
-    """Class that holds an authenticated user
-    """
+    """Class that holds an authenticated user"""
+
     __tablename__ = "USERS"
     userID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String, unique=True)

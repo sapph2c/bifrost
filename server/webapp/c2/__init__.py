@@ -6,9 +6,11 @@ app = Flask(__name__)
 app.database = "agents.db"
 # load the config
 app.config["DEBUG"] = False
-app.config["SECRET_KEY"] = '\x8d1K\x1f\x17\xd5\xbbU\xbc\xd3\xc3n\xfd,umH\x1b\xe9\
-4Wc\x90'
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///agents.db'
+app.config[
+    "SECRET_KEY"
+] = "\x8d1K\x1f\x17\xd5\xbbU\xbc\xd3\xc3n\xfd,umH\x1b\xe9\
+4Wc\x90"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///agents.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # create the sqlalchemy object
 db = SQLAlchemy(app)
