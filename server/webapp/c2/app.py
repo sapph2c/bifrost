@@ -165,8 +165,7 @@ def add_command():
         output = f"[+] new job started with id {new_comm.commandID}"
         if res is not None and res.output is not None:
             res.displayed = True
-            output += f"\n[*] job with id {res.commandID} \
-                        finished with output: \n{res.output}"
+            output += f"\n[*] job with id {res.commandID} finished with output: \n{res.output}"
             db.session.flush()
             db.session.commit()
         rpc = {}
@@ -241,6 +240,10 @@ def signup():
 
 
 def check_agent_alive():
+    """Function that checks if an agent is still alive
+    using its sleepTime along with the last time it checked in
+
+    """
     agents = db.session.query(Agent).all()
     for agent in agents:
         last_seen = agent.lastSeen

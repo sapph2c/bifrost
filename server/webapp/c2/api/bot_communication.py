@@ -1,11 +1,9 @@
 from datetime import datetime
 
-from flask import Blueprint, abort, request, send_from_directory
+from flask import abort, request, send_from_directory
 
 from c2 import Agent, Commands
 from c2.app import add_agent, app, db
-
-bp = Blueprint("api", __name__)
 
 
 @app.route("/api/1.1/add_agent", methods=["POST"])
