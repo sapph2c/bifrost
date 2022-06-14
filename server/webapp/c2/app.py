@@ -1,15 +1,16 @@
-from datetime import datetime, timedelta
-from flask import render_template, redirect, url_for, request, session, flash
-from flask_wtf import FlaskForm
-from functools import wraps
-from wtforms import StringField
-from wtforms.fields.simple import PasswordField
-from werkzeug.security import check_password_hash, generate_password_hash
-from c2 import app, db
-from c2.models import Agent, Commands, User
-
 import os
 import subprocess
+from datetime import datetime, timedelta
+from functools import wraps
+
+from flask import flash, redirect, render_template, request, session, url_for
+from flask_wtf import FlaskForm
+from werkzeug.security import check_password_hash, generate_password_hash
+from wtforms import StringField
+from wtforms.fields.simple import PasswordField
+
+from c2 import app, db
+from c2.models import Agent, Commands, User
 
 
 def login_required(f):

@@ -1,8 +1,9 @@
 from datetime import datetime
-from c2.app import app, db, add_agent
-from c2 import Agent, Commands
-from flask import request, abort, send_from_directory, Blueprint
 
+from flask import Blueprint, abort, request, send_from_directory
+
+from c2 import Agent, Commands
+from c2.app import add_agent, app, db
 
 bp = Blueprint("api", __name__)
 

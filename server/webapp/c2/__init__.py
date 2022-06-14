@@ -20,6 +20,6 @@ from c2.models import Agent, Commands
 db.create_all()
 db.session.commit()
 
-from c2.api.bot_communication import bp, app
+from c2.api.bot_communication import app, bp
 
 app.register_blueprint(bp)
