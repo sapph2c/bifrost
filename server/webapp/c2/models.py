@@ -67,21 +67,21 @@ class Agent(db.Model):
         self.sleepTime = sleepTime
 
 
-class Commands(db.Model):
+class Command(db.Model):
     """Class that holds command information in a COMMANDS table"""
 
     __tablename__ = "COMMANDS"
     commandID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    implantID = db.Column(db.String, nullable=False)
+    agentID = db.Column(db.String, nullable=False)
     command = db.Column(db.String, nullable=True)
     output = db.Column(db.String, nullable=True)
     retrieved = db.Column(db.String, nullable=True)
     displayed = db.Column(db.String, nullable=True)
 
     def __init__(
-        self, implantID, command=None, output=None, retrieved=False, displayed=False
+        self, agentID, command=None, output=None, retrieved=False, displayed=False
     ):
-        self.implantID = implantID
+        self.agentID = agentID
         self.command = command
         self.output = output
         self.retrieved = retrieved
