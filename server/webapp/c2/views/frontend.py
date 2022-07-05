@@ -2,21 +2,12 @@ import subprocess
 from datetime import datetime, timedelta
 from functools import wraps
 
-from flask import (
-    Blueprint,
-    flash,
-    redirect,
-    render_template,
-    request,
-    session,
-    url_for,
-)
+from c2.models import Agent, Command, User, db
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from wtforms import StringField
 from wtforms.fields.simple import PasswordField
-
-from c2.models import Agent, Command, User, db
 
 frontend = Blueprint("frontend", __name__)
 
