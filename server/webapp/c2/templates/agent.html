@@ -75,16 +75,16 @@
           <tr>
             <th scope="col">IP</th>
             <th scope="col">OS</th>
-            <th scope="col">RAM</th>
-            <th scope="col">Kernel Version</th>
+            <th scope="col">User</th>
+            <th scope="col">Sleep Time</th>
           </tr>
         </thead>
         <tbody>
           <tr>
             <td>{{ agent.ip }}</td>
-            <td>{{ agent.platform }} {{ agent.os }} </td>
-            <td>{{ agent.ram }}</td>
-            <td>{{ agent.kernelVersion}} {{ agent.kernelArch }}</td>
+            <td>{{ agent.os }} </td>
+            <td>{{ agent.username }}</td>
+            <td>{{ agent.sleep_time }}</td
           </tr>
       </table>
     </div>

