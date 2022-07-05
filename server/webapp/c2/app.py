@@ -110,7 +110,7 @@ def config():
 @login_required
 def agent(id):
     """Endpoint that displays all the information regarding the
-    bot with the specified ID, and includes an interactive shell.
+    agent with the specified ID, and includes an interactive shell.
 
     :param id: The ID of the agent
     :type id: str
@@ -144,7 +144,7 @@ def add_command():
         if json is None:
             return "Bad request"
         command = json["params"]
-        agentID = json["method"][4:]
+        agentID = json["method"].split("agent")[1]
         new_comm = Command(agentID=agentID, command=command)
         db.session.add(new_comm)
         db.session.flush()

