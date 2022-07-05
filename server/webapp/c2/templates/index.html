@@ -74,7 +74,7 @@
               <div class="card mb-2 h-100" id="{{ agent.id }}">
                 <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#ff2400";</script>
                 <script>document.getElementById("{{ agent.id }}").style.color = "white";</script>
-                {% if agent.isAlive == False %}
+                {% if agent.is_alive == False %}
                 <script>document.getElementById("{{ agent.id }}").style.backgroundColor = "#007FFF";</script>
                 {% endif %}
                 <div class="card-body">
@@ -83,8 +83,8 @@
                     Host: {{ agent.hostname }}<br>
                     Session: {{ agent.username }}<br>
                     OS: {{ agent.platform }} {{ agent.os }}<br>
-                    Last Seen: {{ agent.lastSeen }}<br>
-                    Status: {{ agent.isAlive }}
+                    Last Seen: {{ agent.last_seen }}<br>
+                    Status: {{ agent.is_alive }}
                   </p>
                 </div>
               </div>
