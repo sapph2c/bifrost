@@ -15,7 +15,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # create the sqlalchemy object
 db = SQLAlchemy(app)
 
-from c2.models import Agent, Commands
+from c2.models import Agent, Command
 
 db.create_all()
 db.session.commit()

