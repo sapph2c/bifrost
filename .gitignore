@@ -138,3 +138,4 @@ dmypy.json
 /server/cert.crt
 /implant/pkg/
 *venv
+*test.sh

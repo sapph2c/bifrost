@@ -13,4 +13,9 @@ COPY . .
 WORKDIR /app/implant/payloads
 RUN /usr/local/go/bin/go build
 WORKDIR /app/c2
+RUN rm -rf migrations/
+RUN python3 -m flask db init
+RUN python3 -m flask db migrate -m "initial migration."
+RUN python3 -m flask db upgrade
+CMD [ "python3", ]
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0" ]
