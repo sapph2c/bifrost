@@ -1,6 +1,6 @@
 ![Bifrost](docs/img/Bifrost.png)
 
-[![GitHub license](https://img.shields.io/github/license/AshleyNikr/Bifrost)](https://github.com/AshleyNikr/Bifrost/blob/master/LICENSE)[![GitHub stars](https://img.shields.io/github/stars/AshleyNikr/Bifrost)](https://github.com/AshleyNikr/Bifrost/stargazers)[![Test coverage](docs/img/coverage.svg)]
+[![GitHub license](https://img.shields.io/github/license/AshleyNikr/Bifrost)](https://github.com/AshleyNikr/Bifrost/blob/master/LICENSE)[![GitHub stars](https://img.shields.io/github/stars/AshleyNikr/Bifrost)](https://github.com/AshleyNikr/Bifrost/stargazers)![Test coverage](docs/img/coverage.svg)
 ## Basic Overview
 **Bifrost** is a Flask app that allows communication between implants and a centralized command and control server.
 ## Getting Started:
