@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash
 
 db = SQLAlchemy()
 
@@ -60,5 +61,13 @@ class User(db.Model):
     __tablename__ = "USERS"
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String, unique=True)
-    password = db.Column(db.String)
+    """TODO
+    Make sure password is hashed to protect data at rest 
+    """
     username = db.Column(db.String)
+    password = db.Column(db.String)
+
+    def __init__(self, email, username, password):
+        self.email = email
+        self.username = username
+        self.password = generate_password_hash(password, method="sha256")

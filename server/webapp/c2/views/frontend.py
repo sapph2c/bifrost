@@ -2,12 +2,13 @@ import subprocess
 from datetime import datetime, timedelta
 from functools import wraps
 
-from c2.models import Agent, Command, User, db
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from flask_wtf import FlaskForm
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 from wtforms import StringField
 from wtforms.fields.simple import PasswordField
+
+from c2.models import Agent, Command, User, db
 
 frontend = Blueprint("frontend", __name__)
 
@@ -210,11 +211,7 @@ def signup():
         if already_user:
             return f"{username} is already registered."
 
-        new_user = User(
-            email=email,
-            username=username,
-            password=generate_password_hash(password, method="sha256"),
-        )
+        new_user = User(email, username, password)
         db.session.add(new_user)
         db.session.commit()
         return redirect(url_for("frontend.login"))

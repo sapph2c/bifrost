@@ -1,9 +1,10 @@
+from flask import Flask
+from flask_migrate import Migrate
+
 import c2.flask_config
 from c2.models import db
 from c2.views.api import api
 from c2.views.frontend import frontend
-from flask import Flask
-from flask_migrate import Migrate
 
 
 def create_app():
