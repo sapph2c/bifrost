@@ -1,7 +1,12 @@
+import os
+import sys
+
 import pytest
 
-from c2.app import create_app
-from c2.models import Agent, Command, User, db
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src/")))
+
+from src.c2.app import create_app
+from src.c2.models import Agent, Command, User
 
 
 @pytest.fixture(scope="module")
