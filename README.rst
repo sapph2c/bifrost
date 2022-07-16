@@ -1,61 +1,22 @@
 .. figure:: docs/img/Bifrost.png
    :alt: Bifrost
 
-   Bifrost
-
 |GitHub license|\ |GitHub stars|\ |Test coverage| 
 
-Getting Started
-===============
+Overview
+========
 
-Basic Overview
 **Bifrost** is a Flask app that allows communication between implants
 and a centralized command and control server.
 
-Server side:
-============
+Quick Start
+-----------
 
-Clone the repo
-
-.. code:: bash
-
-   git clone https://github.com/AshleyNikr/Bifrost.git
-
-Change into the server directory
-
-.. code:: bash
-
-   cd Bifrost/server
-
-Make sure the docker service is running
-
-.. code:: bash
-
-   sudo systemctl restart docker.service
-
-Start the docker container
-
-.. code:: bash
-
-   sudo docker-compose up --force-recreate --build
-
-Naviage to the local signup endpoint
-
-::
-
-   https://127.0.0.1:5000/signup
-
-Client side:
-============
-
-Run the implant on the agent
-
-::
-
-   sudo ./implant
+Head over to the documentation located at https://bifrost-ashley.readthedocs.io/en/latest/
+and follow the installation instructions.
 
 Planned Features:
-=================
+-----------------
 
 -  Modularity
 -  Documentation
