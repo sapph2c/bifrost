@@ -1,10 +1,15 @@
-.. Bifrost documentation master file, created by
-   sphinx-quickstart on Fri Jul 15 19:05:15 2022.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Bifrost's documentation!
 ===================================
+.. automodule:: c2.app
+    :members:
+.. automodule:: c2.models
+    :members:
+.. automodule:: c2.flask_config
+    :members:
+.. automodule:: c2.views.api
+    :members:
+.. automodule:: c2.views.frontend
+    :members:
 
 .. toctree::
    :maxdepth: 2

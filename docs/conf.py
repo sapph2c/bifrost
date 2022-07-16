@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../server/webapp/c2/'))
 
 
 # -- Project information -----------------------------------------------------
@@ -22,7 +22,7 @@ copyright = '2022, Ashley Nikirk'
 author = 'Ashley Nikirk'
 
 # The full version, including alpha/beta/rc tags
-release = '1'
+release = '0.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,11 +31,11 @@ release = '1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
-    'sphinx.ext.viewcode',
     'sphinx.ext.coverage',
+    'sphinx.ext.napoleon'
 ]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -56,3 +56,6 @@ html_theme = 'alabaster'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+
+# -- Extension configuration -------------------------------------------------
