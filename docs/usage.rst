@@ -38,7 +38,7 @@ Navigate to the local signup endpoint
 
   https://127.0.0.1:5000/signup
 
-Register a user: TODO add image of registration page
+Register a user and login to go to the dashboard
 
 Running an agent
 ----------------
