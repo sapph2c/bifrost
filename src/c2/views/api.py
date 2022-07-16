@@ -8,7 +8,7 @@ from datetime import datetime
 
 from flask import Blueprint, abort, request, send_from_directory
 
-from c2.models import Agent, Command, db
+from src.c2.models import Agent, Command, db
 
 api = Blueprint("api", __name__)
 

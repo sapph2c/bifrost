@@ -5,10 +5,10 @@ a Flask app instance to be used for the Bifrost C2.
 from flask import Flask
 from flask_migrate import Migrate
 
-import c2.flask_config
-from c2.models import db
-from c2.views.api import api
-from c2.views.frontend import frontend
+import src.c2.flask_config
+from src.c2.models import db
+from src.c2.views.api import api
+from src.c2.views.frontend import frontend
 
 
 def create_app() -> Flask:
@@ -18,7 +18,7 @@ def create_app() -> Flask:
     :rtype: `Flask`
     """
     app = Flask(__name__)
-    app.config.from_object(c2.flask_config)
+    app.config.from_object(src.c2.flask_config)
     register_extensions(app)
     register_blueprints(app)
     return app

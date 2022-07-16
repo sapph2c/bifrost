@@ -13,7 +13,7 @@ from werkzeug.security import check_password_hash
 from wtforms import StringField
 from wtforms.fields.simple import PasswordField
 
-from c2.models import Agent, User, db
+from src.c2.models import Agent, User, db
 
 frontend = Blueprint("frontend", __name__)
 
@@ -92,7 +92,7 @@ class UserLogin:
         actual_user = User.query.filter(User.username == self.username).first()
         if not actual_user:
             return False
-        if check_password_hash(actual_user.password, self.password):
+        if not check_password_hash(actual_user.password, self.password):
             return False
         return True
 

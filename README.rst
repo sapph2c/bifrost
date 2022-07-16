@@ -19,7 +19,6 @@ Planned Features:
 -----------------
 
 -  Modularity
--  Documentation
 -  Group commands
 
 .. |GitHub license| image:: https://img.shields.io/github/license/AshleyNikr/Bifrost
