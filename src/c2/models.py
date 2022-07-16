@@ -61,9 +61,6 @@ class User(db.Model):
     __tablename__ = "USERS"
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String, unique=True)
-    """TODO
-    Make sure password is hashed to protect data at rest 
-    """
     username = db.Column(db.String)
     password = db.Column(db.String)
 

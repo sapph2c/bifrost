@@ -12,6 +12,7 @@ pytest = "*"
 flask-migrate = "*"
 pytest-cov = "*"
 sphinx = "*"
+sphinx-rtd-theme = "*"
 
 [dev-packages]
 

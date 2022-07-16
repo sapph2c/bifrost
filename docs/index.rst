@@ -1,25 +1,24 @@
 Welcome to Bifrost's documentation!
 ===================================
-.. automodule:: c2.app
-    :members:
-.. automodule:: c2.models
-    :members:
-.. automodule:: c2.flask_config
-    :members:
-.. automodule:: c2.views.api
-    :members:
-.. automodule:: c2.views.frontend
-    :members:
+
+**Bifrost** is a Flask-based HTTP(S) command and control (C2) framework with a web
+frontend. It is built to run with malleable agents written in Go. 
+
+Check out the :doc:`usage` section for further information, including
+how to :ref:`installation` the project.
+
+.. note::
+
+   This project is under active development.
+
+Contents
+--------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   Home <self>
+   usage
+   api
+   frontend
+   models
+   app
