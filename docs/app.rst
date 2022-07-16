@@ -1,5 +1,5 @@
 App
 ===
 
-.. automodule:: c2.app
+.. automodule:: src.c2.app
     :members:

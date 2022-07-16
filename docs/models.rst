@@ -1,5 +1,5 @@
 Models
 ======
 
-.. automodule:: c2.models
+.. automodule:: src.c2.models
     :members:

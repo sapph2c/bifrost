@@ -1,5 +1,5 @@
 Frontend
 ========
 
-.. automodule:: c2.views.frontend
+.. automodule:: src.c2.views.frontend
     :members:
