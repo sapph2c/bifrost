@@ -6,31 +6,30 @@ Usage
 Installation
 ------------
 
-To use Bifrost, first install the python dependencies using pip:
+.. note::
+
+   Pip is required in this step and it's recommended to run within a virtual environment.
+
+To use Bifrost, first install the python dependencies:
 
 .. code-block:: console
 
-   (.venv) $ pip install -r requirements.txt
+   (.venv) $ make init
+
+Launching the server
+--------------------
 
 .. note::
 
    Docker and docker-compose are used to run the webserver and reverse proxy,
    so make sure you have both installed before you continue.
 
-Launching the server
---------------------
+Start the nginx reverse proxy and Flask app containers:
 
-Make sure the docker service is running
+ .. code-block:: console
 
-.. code:: bash
+   (.venv) $ make deploy
 
-   sudo systemctl restart docker.service
-
-Start the nginx reverse proxy and Flask app containers
-
-.. code:: bash
-
-   sudo docker-compose up
 
 Navigate to the local signup endpoint
 
