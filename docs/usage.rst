@@ -26,9 +26,9 @@ Launching the server
 
 Start the nginx reverse proxy and Flask app containers:
 
- .. code-block:: console
+.. code-block:: console
 
-   (.venv) $ make deploy
+   (venv) $ make deploy
 
 
 Navigate to the local signup endpoint
