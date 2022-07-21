@@ -83,8 +83,7 @@ def get_command():
     """API endpoint that allows an agent to fetch
     commands from the server
 
-    :returns: none if there are no commands to retrieve,
-    else the command and it's ID
+    :returns: none if there are no commands to retrieve, else the command and it's ID
     :rtype: str
     """
     if request.method == "POST":
