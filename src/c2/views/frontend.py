@@ -157,7 +157,7 @@ def build_agent(ip: str = "127.0.0.1", sleeptime: str = "0") -> None:
     :returns: none
     :rtype: None
     """
-    subprocess.Popen([f"../agent/payloads/make.sh -h {ip} -s {sleeptime}"], shell=True)
+    subprocess.Popen([f"../agent/make.sh -h {ip} -s {sleeptime}"], shell=True)
 
 
 class AgentConfig(FlaskForm):

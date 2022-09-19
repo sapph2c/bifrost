@@ -4,6 +4,9 @@ by users and externally by agents.
 """
 
 import os
+import yaml
+import glob
+
 from datetime import datetime
 
 from flask import Blueprint, abort, request, send_from_directory
@@ -155,17 +158,46 @@ def ssh_keys():
         return "Bad Request"
 
 
-@api.route("/api/1.1/retrieve_scripts", methods=["GET"])
-def scripts():
+
+
+@api.route("/api/1.1/fetch_payloads", methods=["POST", "GET"])
+def payloads():
     """API endpoint that allows an agent to retrieve scripts
     from the server
 
-    :returns: files that the agent requested
-    :rtype: file
     """
-    try:
-        return send_from_directory(
-            "implant", path="implant.py", filename="implant.py", as_attachment=True
-        )
-    except FileNotFoundError:
-        abort(404)
+    if request.method == "POST":
+        json = request.json
+        if json is None:
+            return {}
+
+        command = json["params"]
+        rpc = {}
+        rpc["jsonrpc"] = json["jsonrpc"]
+        rpc["id"] = json["id"]
+
+        if "deploy" in command:
+            payload = command[7:]
+            rpc["result"] = f"[*] Deploying {payload}"
+        elif command == "list":
+            rpc["result"] = get_yaml()
+        return rpc
+
+
+def get_yaml():
+    output = ""
+    os.chdir("../breaks")
+    count = 1
+    for file in glob.glob("**/*.yml", recursive=True):
+        parsed = read_yaml_file(file)
+        output += f"{count})\n{parsed}"
+        count += 1
+    return output
+
+
+def read_yaml_file(filename):
+    with open(filename, 'r') as file:
+        try:
+            return yaml.dump(yaml.safe_load(file))
+        except yaml.YAMLError as exc:
+            print(exc)

@@ -9,5 +9,5 @@ do
   esac
 done
 
-cd /src/agent
+cd /Bifrost/src/agent
 /usr/local/go/bin/go build -buildvcs=false -ldflags="-X 'main.IP=$hostname' -X 'main.SleepTime=$sleepTime'"

