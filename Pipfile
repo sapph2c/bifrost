@@ -14,6 +14,7 @@ pytest-cov = "*"
 sphinx = "*"
 sphinx-rtd-theme = "*"
 pyyaml = "*"
+pre-commit = "*"
 
 [dev-packages]
 

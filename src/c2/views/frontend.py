@@ -120,7 +120,7 @@ def check_agents_statuses() -> None:
         last_seen = datetime.strptime(last_seen, "%d %B, %Y %H:%M:%S")
         curr_time = datetime.now()
         elapsed = curr_time - last_seen
-        expected_check_in_time = timedelta(seconds=(agent.sleep_time * 2))
+        expected_check_in_time = timedelta(seconds=(agent.sleep_time * 2 + 10))
         if elapsed > expected_check_in_time:
             agent.is_alive = False
         else:
@@ -157,7 +157,7 @@ def build_agent(ip: str = "127.0.0.1", sleeptime: str = "0") -> None:
     :returns: none
     :rtype: None
     """
-    subprocess.Popen([f"../agent/make.sh -h {ip} -s {sleeptime}"], shell=True)
+    subprocess.Popen([f"/Bifrost/src/agent/make.sh -h {ip} -s {sleeptime}"], shell=True)
 
 
 class AgentConfig(FlaskForm):
