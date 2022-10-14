@@ -13,8 +13,11 @@ dev: ## Create a dev environment from the Pipfile
 	@pipenv shell
 
 deploy: ## Deploy the C2 and proxy server
-	@sudo systemctl restart docker.service
-	@sudo docker-compose -f deployment/docker-compose.yml up
+	@sudo docker compose -f deployment/docker-compose.yml up
 
-help: ## Display the list of make commands
+build: ## Build the docker containers and deploy
+	@sudo docker compose -f deployment/docker-compose.yml build
+	@sudo docker compose -f deployment/docker-compose.yml up
+
+help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

